@@ -1,0 +1,1153 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<title>MoonTech Merch Library</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&family=DM+Serif+Display&family=Caveat:wght@600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/duotone/style.css">
+<style>
+html,body{margin:0;background:#FBF8F3;color:#1B1730;font-family:Figtree,system-ui,sans-serif;-webkit-font-smoothing:antialiased;}
+*{box-sizing:border-box;}
+a{color:#3E278D;}a:hover{color:#AD5C9A;}
+button,input,select{font-family:inherit;}
+input::placeholder{color:#8F89A3;}
+</style>
+</helmet>
+<div style="min-height:100vh;display:flex;flex-direction:column;">
+  <header style="position:sticky;top:0;z-index:30;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px 20px;padding:12px 28px;background:rgba(251,248,243,.95);backdrop-filter:blur(10px);border-bottom:1px solid #E7E1F3;">
+    <button onClick="{{ goShop }}" style="display:flex;align-items:center;gap:14px;border:none;background:none;cursor:pointer;padding:0;color:#1B1730;">
+      <div style="width:124px;height:21px;"><sc-if value="{{ hasWm }}" hint-placeholder-val="{{ false }}">{{ wordmarkEl }}</sc-if></div>
+      <div style="width:1px;height:22px;background:#E7E1F3;"></div>
+      <div style="font-weight:700;font-size:15px;white-space:nowrap;">Merch Library</div>
+    </button>
+    <nav style="display:flex;align-items:center;gap:4px;">
+      <sc-for list="{{ nav }}" as="n" hint-placeholder-count="3">
+        <button onClick="{{ n.go }}" style="border:none;cursor:pointer;font-size:14px;font-weight:600;padding:9px 14px;border-radius:99px;background:{{ n.bg }};color:{{ n.fg }};">{{ n.label }}</button>
+      </sc-for>
+      <button onClick="{{ goCart }}" style="display:flex;align-items:center;gap:8px;border:none;cursor:pointer;font-size:14px;font-weight:700;padding:9px 16px;border-radius:99px;background:{{ cartBg }};color:#fff;margin-left:6px;">
+        <i class="ph-duotone ph-shopping-bag" style="font-size:18px;"></i><span>Cart</span>
+        <span style="min-width:22px;height:22px;padding:0 6px;border-radius:99px;background:#fff;color:#3E278D;font-size:12px;font-weight:800;display:flex;align-items:center;justify-content:center;">{{ cartCount }}</span>
+      </button>
+    </nav>
+  </header>
+
+  <main style="flex:1;width:100%;max-width:1320px;margin:0 auto;padding:0 28px 80px;">
+
+    <sc-if value="{{ isShop }}" hint-placeholder-val="{{ true }}">
+      <section style="display:flex;flex-direction:column;align-items:center;gap:18px;padding:52px 0 30px;text-align:center;">
+        <h1 style="margin:0;font-family:'DM Serif Display',Georgia,serif;font-weight:400;font-size:clamp(36px,5vw,58px);line-height:1.04;letter-spacing:-.01em;">MoonTech Merch Library</h1>
+        <p style="margin:0;font-size:16px;color:#6B6580;max-width:620px;text-wrap:pretty;">{{ heroLine }}</p>
+        <div style="width:100%;max-width:640px;display:flex;align-items:center;gap:10px;padding:6px 6px 6px 20px;border-radius:99px;background:#fff;border:1.5px solid #D9D0EE;box-shadow:0 8px 24px rgba(62,39,141,.08);">
+          <i class="ph-duotone ph-magnifying-glass" style="font-size:20px;color:#3E278D;"></i>
+          <input value="{{ q }}" onChange="{{ onQ }}" placeholder="Search merch…" style="flex:1;min-width:0;border:none;outline:none;background:none;font-size:16px;padding:10px 0;color:#1B1730;">
+          <sc-if value="{{ hasQ }}" hint-placeholder-val="{{ false }}">
+            <button onClick="{{ clearQ }}" style="border:none;cursor:pointer;background:#F1ECFA;color:#3E278D;font-size:13px;font-weight:700;padding:9px 14px;border-radius:99px;">Clear</button>
+          </sc-if>
+        </div>
+        <div style="display:flex;flex-wrap:wrap;justify-content:center;gap:6px;">
+          <sc-for list="{{ quick }}" as="t" hint-placeholder-count="5">
+            <button onClick="{{ t.go }}" style="border:none;cursor:pointer;background:none;color:#6B6580;font-size:13px;font-weight:600;padding:4px 8px;text-decoration:underline;text-underline-offset:3px;text-decoration-color:#D9D0EE;">{{ t.label }}</button>
+          </sc-for>
+        </div>
+      </section>
+      <div style="display:flex;gap:8px;overflow-x:auto;padding:4px 0 14px;border-bottom:1px solid #E7E1F3;">
+        <sc-for list="{{ catTabs }}" as="c" hint-placeholder-count="9">
+          <button onClick="{{ c.go }}" style="flex:none;display:flex;align-items:center;gap:7px;border:1px solid {{ c.border }};cursor:pointer;font-size:14px;font-weight:600;padding:9px 15px;border-radius:99px;background:{{ c.bg }};color:{{ c.fg }};white-space:nowrap;">
+            <span>{{ c.label }}</span><span style="font-size:12px;opacity:.65;font-feature-settings:'tnum';">{{ c.count }}</span>
+          </button>
+        </sc-for>
+      </div>
+      <sc-if value="{{ hasStyleF }}" hint-placeholder-val="{{ false }}">
+        <div style="display:flex;flex-wrap:wrap;align-items:center;gap:14px;margin-top:16px;padding:10px 12px 10px 10px;border-radius:16px;background:#fff;border:1px solid #E7E1F3;">
+          <div style="flex:none;position:relative;width:84px;height:52px;border-radius:10px;overflow:hidden;background:#EEE8F6;">{{ styleThumb }}</div>
+          <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:2px;"><span style="font-size:12px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:#8F89A3;">Products in this style</span><span style="font-family:'DM Serif Display',Georgia,serif;font-size:20px;">{{ styleName }}</span></div>
+          <button onClick="{{ backGallery }}" style="border:none;cursor:pointer;background:none;color:#3E278D;font-size:13px;font-weight:700;padding:6px 8px;">Back to gallery</button>
+          <button onClick="{{ clearStyle }}" style="border:none;cursor:pointer;background:#F1ECFA;color:#3E278D;font-size:13px;font-weight:800;padding:8px 14px;border-radius:99px;">Show all products</button>
+        </div>
+      </sc-if>
+      <div style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px;padding:16px 0 20px;">
+        <div style="font-size:14px;color:#6B6580;">{{ resultLine }}</div>
+        <div style="display:flex;flex-wrap:wrap;gap:8px;">
+          <sc-for list="{{ filters }}" as="fl" hint-placeholder-count="4">
+            <label style="display:flex;align-items:center;gap:6px;padding:0 4px 0 12px;border-radius:99px;background:#fff;border:1px solid #E7E1F3;font-size:13px;color:#6B6580;">
+              <span>{{ fl.label }}</span>
+              {{ fl.el }}
+            </label>
+          </sc-for>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:22px 18px;">
+        <sc-for list="{{ grid }}" as="p" hint-placeholder-count="8">
+          <button onClick="{{ p.open }}" style="text-align:left;cursor:pointer;padding:0;border:none;background:none;display:flex;flex-direction:column;gap:12px;color:#1B1730;">
+            <div style="position:relative;width:100%;aspect-ratio:1/1;border-radius:18px;overflow:hidden;background:#fff;border:1px solid #EEE8F6;transition:box-shadow .15s;" style-hover="box-shadow:0 12px 28px rgba(27,23,48,.10);">
+              <sc-if value="{{ p.hasImg }}" hint-placeholder-val="{{ true }}">
+                {{ p.imgEl }}
+              </sc-if>
+              <sc-if value="{{ p.noImg }}" hint-placeholder-val="{{ false }}">
+                <div style="position:absolute;inset:0;">{{ p.art }}</div>
+              </sc-if>
+              <span style="position:absolute;top:12px;left:12px;font-size:12px;font-weight:700;padding:4px 10px;border-radius:99px;background:{{ p.stBg }};color:{{ p.stFg }};">{{ p.st }}</span>
+              <sc-if value="{{ p.hasDz }}" hint-placeholder-val="{{ false }}">
+                <span style="position:absolute;bottom:12px;left:12px;display:flex;align-items:center;gap:5px;font-size:12px;font-weight:700;padding:4px 10px;border-radius:99px;background:rgba(255,255,255,.92);color:#3E278D;"><i class="ph-duotone ph-paint-brush"></i>{{ p.dzCount }}</span>
+              </sc-if>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:4px;padding:0 2px;">
+              <div style="font-family:'DM Serif Display',Georgia,serif;font-size:20px;line-height:1.15;">{{ p.n }}</div>
+              <div style="display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 10px;">
+                <span style="font-size:16px;font-weight:800;color:{{ p.priceFg }};font-feature-settings:'tnum';">{{ p.price }}</span>
+                <span style="font-size:13px;color:#6B6580;">{{ p.supLine }}</span>
+              </div>
+              <div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:2px;">
+                <sc-for list="{{ p.tags }}" as="t" hint-placeholder-count="2">
+                  <span style="font-size:11px;font-weight:600;color:#6B6580;padding:2px 8px;border-radius:99px;background:#F5F2F8;">{{ t }}</span>
+                </sc-for>
+              </div>
+            </div>
+          </button>
+        </sc-for>
+      </div>
+      <sc-if value="{{ noResults }}" hint-placeholder-val="{{ false }}">
+        <div style="display:flex;flex-direction:column;align-items:center;gap:12px;padding:60px 0;color:#6B6580;font-size:15px;">
+          <span>No products match these filters.</span>
+          <button onClick="{{ resetFilters }}" style="border:none;cursor:pointer;background:#3E278D;color:#fff;font-size:14px;font-weight:700;padding:10px 18px;border-radius:99px;">Reset filters</button>
+        </div>
+      </sc-if>
+    </sc-if>
+
+    <sc-if value="{{ isProduct }}" hint-placeholder-val="{{ false }}">
+      <div style="display:flex;align-items:center;gap:8px;padding:22px 0 18px;font-size:13px;color:#6B6580;">
+        <button onClick="{{ goShop }}" style="border:none;background:none;cursor:pointer;color:#3E278D;font-weight:600;font-size:13px;padding:0;">Shop</button>
+        <span>/</span>
+        <button onClick="{{ pr.goCat }}" style="border:none;background:none;cursor:pointer;color:#3E278D;font-weight:600;font-size:13px;padding:0;">{{ pr.cat }}</button>
+        <span>/</span><span>{{ pr.n }}</span>
+      </div>
+      <div style="display:flex;flex-wrap:wrap;gap:36px;align-items:flex-start;">
+        <div style="flex:1 1 480px;min-width:0;display:flex;flex-direction:column;gap:12px;">
+          <div style="position:relative;width:100%;aspect-ratio:4/3;border-radius:22px;overflow:hidden;background:#fff;border:1px solid #EEE8F6;">
+            <sc-if value="{{ pr.mainIsImg }}" hint-placeholder-val="{{ true }}">
+              {{ pr.mainImgEl }}
+            </sc-if>
+            <sc-if value="{{ pr.mainIsArt }}" hint-placeholder-val="{{ false }}">
+              <div style="position:absolute;inset:0;">{{ pr.mainArt }}</div>
+            </sc-if>
+            <span style="position:absolute;top:14px;left:14px;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:5px 10px;border-radius:99px;background:#1B1730;color:#fff;">{{ pr.mainLabel }}</span>
+          </div>
+          <div style="display:flex;gap:8px;overflow-x:auto;padding-bottom:4px;">
+            <sc-for list="{{ pr.thumbs }}" as="t" hint-placeholder-count="5">
+              <button onClick="{{ t.go }}" title="{{ t.label }}" style="flex:none;position:relative;width:76px;height:76px;padding:0;border-radius:12px;overflow:hidden;cursor:pointer;background:#fff;border:2px solid {{ t.border }};">
+                <sc-if value="{{ t.isImg }}" hint-placeholder-val="{{ true }}">{{ t.imgEl }}</sc-if>
+                <sc-if value="{{ t.isArt }}" hint-placeholder-val="{{ false }}"><div style="position:absolute;inset:0;">{{ t.art }}</div></sc-if>
+              </button>
+            </sc-for>
+          </div>
+        </div>
+
+        <div style="flex:1 1 420px;min-width:0;display:flex;flex-direction:column;gap:22px;">
+          <div style="display:flex;flex-direction:column;gap:8px;">
+            <div style="display:flex;flex-wrap:wrap;gap:6px;">
+              <sc-for list="{{ pr.tags }}" as="t" hint-placeholder-count="2">
+                <span style="font-size:12px;font-weight:600;color:#6B6580;padding:3px 9px;border-radius:99px;background:#F5F2F8;">{{ t }}</span>
+              </sc-for>
+            </div>
+            <h1 style="margin:0;font-family:'DM Serif Display',Georgia,serif;font-weight:400;font-size:clamp(32px,4vw,44px);line-height:1.05;">{{ pr.n }}</h1>
+            <div style="display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 14px;">
+              <span style="font-size:20px;font-weight:800;color:{{ pr.priceFg }};">{{ pr.price }}</span>
+              <span style="font-size:14px;color:#6B6580;">{{ pr.supLine }}</span>
+            </div>
+          </div>
+
+          <div style="display:flex;flex-direction:column;gap:10px;">
+            <div style="font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#6B6580;">1 · Choose supplier option</div>
+            <sc-for list="{{ pr.vars }}" as="v" hint-placeholder-count="3">
+              <button onClick="{{ v.pick }}" style="text-align:left;cursor:pointer;display:flex;gap:12px;align-items:center;padding:12px 14px;border-radius:14px;background:#fff;border:2px solid {{ v.border }};color:#1B1730;">
+                <span style="flex:none;width:18px;height:18px;border-radius:50%;border:2px solid {{ v.dot }};display:flex;align-items:center;justify-content:center;"><span style="width:8px;height:8px;border-radius:50%;background:{{ v.dotFill }};"></span></span>
+                <span style="flex:1;min-width:0;display:flex;flex-direction:column;gap:2px;">
+                  <span style="font-size:14px;font-weight:800;">{{ v.s }}</span>
+                  <span style="font-size:13px;line-height:1.35;color:#4A4560;">{{ v.name }}</span>
+                  <span style="font-size:12px;color:#8F89A3;">{{ v.ref }}</span>
+                </span>
+                <span style="flex:none;text-align:right;display:flex;flex-direction:column;gap:2px;">
+                  <span style="font-size:14px;font-weight:800;color:{{ v.priceFg }};white-space:nowrap;">{{ v.price }}</span>
+                  <span style="font-size:11px;color:#8F89A3;white-space:nowrap;">{{ v.priceSub }}</span>
+                </span>
+              </button>
+            </sc-for>
+          </div>
+
+          <div style="display:flex;flex-direction:column;gap:10px;">
+            <div style="font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#6B6580;">2 · Quantity</div>
+            <div style="display:flex;flex-wrap:wrap;gap:8px;">
+              <sc-for list="{{ pr.qtys }}" as="q" hint-placeholder-count="4">
+                <button onClick="{{ q.go }}" style="min-width:64px;cursor:pointer;font-size:14px;font-weight:700;padding:10px 14px;border-radius:12px;border:2px solid {{ q.border }};background:{{ q.bg }};color:{{ q.fg }};font-feature-settings:'tnum';">{{ q.label }}</button>
+              </sc-for>
+            </div>
+            <div style="font-size:12px;color:#8F89A3;">{{ pr.qtyNote }}</div>
+          </div>
+
+          <div style="display:flex;flex-direction:column;gap:12px;padding:18px 20px;border-radius:18px;background:#fff;border:1px solid #E7E1F3;">
+            <sc-if value="{{ pr.quoted }}" hint-placeholder-val="{{ false }}">
+              <div style="display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:8px;">
+                <span style="font-size:28px;font-weight:800;font-feature-settings:'tnum';">{{ pr.unit }}<span style="font-size:15px;font-weight:600;color:#6B6580;"> / unit</span></span>
+                <span style="font-size:13px;font-weight:700;color:#1E8E5A;padding:4px 10px;border-radius:99px;background:#E3F3EA;">Quoted</span>
+              </div>
+              <div style="display:flex;justify-content:space-between;gap:10px;padding-top:10px;border-top:1px solid #F0EBF7;font-size:15px;">
+                <span style="color:#4A4560;">{{ pr.totalLabel }}</span><span style="font-weight:800;font-feature-settings:'tnum';">{{ pr.total }}</span>
+              </div>
+              <div style="display:flex;justify-content:space-between;gap:10px;font-size:13px;color:#6B6580;">
+                <span>Including 5% VAT</span><span style="font-feature-settings:'tnum';">{{ pr.totalVat }}</span>
+              </div>
+            </sc-if>
+            <sc-if value="{{ pr.pending }}" hint-placeholder-val="{{ true }}">
+              <div style="display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:8px;">
+                <span style="font-size:24px;font-weight:800;color:#7E3F70;">{{ pr.pendTitle }}</span>
+              </div>
+              <div style="font-size:13px;line-height:1.5;color:#4A4560;">{{ pr.pendNote }}</div>
+            </sc-if>
+            <div style="display:grid;grid-template-columns:110px minmax(0,1fr);gap:7px 12px;font-size:13px;line-height:1.45;padding-top:10px;border-top:1px solid #F0EBF7;">
+              <span style="color:#6B6580;">Branding</span><span>{{ pr.brand }}</span>
+              <span style="color:#6B6580;">Specification</span><span>{{ pr.spec }}</span>
+              <span style="color:#6B6580;">MOQ</span><span>{{ pr.moq }}</span>
+              <span style="color:#6B6580;">Lead time</span><span>{{ pr.lead }}</span>
+              <span style="color:#6B6580;">Source</span><span>{{ pr.doc }}</span>
+            </div>
+            <div style="display:flex;flex-wrap:wrap;gap:10px;align-items:center;padding-top:4px;">
+              <button onClick="{{ pr.add }}" style="flex:1 1 200px;display:flex;align-items:center;justify-content:center;gap:8px;border:none;cursor:pointer;font-size:16px;font-weight:800;padding:15px 20px;border-radius:14px;background:#3E278D;color:#fff;" style-hover="background:#2F1D72;">
+                <i class="ph-duotone ph-shopping-bag" style="font-size:20px;"></i><span>{{ pr.addLabel }}</span>
+              </button>
+              <sc-if value="{{ pr.hasLink }}" hint-placeholder-val="{{ false }}">
+                <a href="{{ pr.linkUrl }}" target="_blank" rel="noopener" style="display:flex;align-items:center;gap:6px;font-size:14px;font-weight:700;padding:14px 16px;border-radius:14px;border:1px solid #D9D0EE;color:#3E278D;text-decoration:none;"><i class="ph-duotone ph-book-open"></i>{{ pr.linkLabel }}</a>
+              </sc-if>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <sc-if value="{{ pr.hasDz }}" hint-placeholder-val="{{ false }}">
+        <section style="display:flex;flex-direction:column;gap:16px;padding-top:56px;">
+          <div style="display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:8px;">
+            <h2 style="margin:0;font-family:'DM Serif Display',Georgia,serif;font-weight:400;font-size:30px;">MoonTech design ideas</h2>
+            <span style="font-size:13px;color:#6B6580;">Concept mockups. Wording is exploratory, not approved messaging.</span>
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px;">
+            <sc-for list="{{ pr.dz }}" as="d" hint-placeholder-count="3">
+              <div style="display:flex;flex-direction:column;border-radius:18px;overflow:hidden;background:#fff;border:1px solid #EEE8F6;">
+                <div style="position:relative;width:100%;aspect-ratio:4/3;"><div style="position:absolute;inset:0;">{{ d.art }}</div></div>
+                <div style="padding:12px 14px 14px;display:flex;flex-direction:column;gap:6px;">
+                  <div style="display:flex;flex-wrap:wrap;gap:6px;">
+                    <span style="font-size:12px;font-weight:700;padding:3px 9px;border-radius:99px;background:{{ d.audBg }};color:{{ d.audFg }};">{{ d.aud }}</span>
+                    <span style="display:flex;align-items:center;gap:5px;font-size:12px;font-weight:600;padding:3px 9px 3px 4px;border-radius:99px;background:#F5F2F8;"><span style="width:13px;height:13px;border-radius:50%;background:{{ d.sw }};"></span>{{ d.style }}</span>
+                  </div>
+                  <div style="font-size:14px;line-height:1.45;color:#4A4560;">{{ d.line }}</div>
+                </div>
+              </div>
+            </sc-for>
+          </div>
+        </section>
+      </sc-if>
+
+      <section style="display:flex;flex-direction:column;gap:16px;padding-top:56px;">
+        <div style="display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:8px;">
+          <h2 style="margin:0;font-family:'DM Serif Display',Georgia,serif;font-weight:400;font-size:30px;">Compare suppliers</h2>
+          <span style="font-size:13px;color:#6B6580;">Unit price, AED excl. VAT. Each row is a separate product; prices are never averaged.</span>
+        </div>
+        <div style="overflow-x:auto;border-radius:18px;border:1px solid #E7E1F3;background:#fff;">
+          <table style="width:100%;min-width:820px;border-collapse:collapse;font-size:13px;">
+            <thead>
+              <tr style="background:#F7F4FB;text-align:left;">
+                <th style="padding:12px 16px;font-weight:700;color:#6B6580;">Supplier</th>
+                <th style="padding:12px 16px;font-weight:700;color:#6B6580;">Product &amp; reference</th>
+                <sc-for list="{{ qtyHead }}" as="h" hint-placeholder-count="5"><th style="padding:12px 10px;font-weight:700;color:#6B6580;text-align:right;white-space:nowrap;">{{ h }}</th></sc-for>
+                <th style="padding:12px 16px;font-weight:700;color:#6B6580;">MOQ</th>
+                <th style="padding:12px 16px;font-weight:700;color:#6B6580;">Lead time</th>
+              </tr>
+            </thead>
+            <tbody>
+              <sc-for list="{{ pr.cmp }}" as="r" hint-placeholder-count="3">
+                <tr onClick="{{ r.pick }}" style="border-top:1px solid #F0EBF7;cursor:pointer;background:{{ r.bg }};">
+                  <td style="padding:12px 16px;font-weight:800;white-space:nowrap;vertical-align:top;">{{ r.s }}</td>
+                  <td style="padding:12px 16px;vertical-align:top;line-height:1.4;"><div>{{ r.name }}</div><div style="color:#8F89A3;font-size:12px;">{{ r.ref }}</div></td>
+                  <sc-for list="{{ r.cells }}" as="c" hint-placeholder-count="5"><td style="padding:12px 10px;text-align:right;white-space:nowrap;vertical-align:top;font-feature-settings:'tnum';font-weight:{{ c.w }};color:{{ c.fg }};">{{ c.t }}</td></sc-for>
+                  <td style="padding:12px 16px;vertical-align:top;color:#6B6580;">{{ r.moq }}</td>
+                  <td style="padding:12px 16px;vertical-align:top;color:#6B6580;">{{ r.lead }}</td>
+                </tr>
+              </sc-for>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </sc-if>
+
+    <sc-if value="{{ isGallery }}" hint-placeholder-val="{{ false }}">
+      <section style="display:flex;flex-direction:column;gap:10px;padding:44px 0 22px;">
+        <h1 style="margin:0;font-family:'DM Serif Display',Georgia,serif;font-weight:400;font-size:clamp(32px,4.5vw,48px);line-height:1.05;">Design gallery</h1>
+        <p style="margin:0;font-size:15px;color:#6B6580;max-width:640px;text-wrap:pretty;">Visual directions for MoonTech merch. Pick a style, then jump to the products it suits.</p>
+      </section>
+      <section style="display:flex;flex-direction:column;gap:16px;padding-bottom:52px;">
+        <div style="display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:6px 14px;">
+          <h2 style="margin:0;font-family:'DM Serif Display',Georgia,serif;font-weight:400;font-size:30px;">Core design directions</h2>
+          <span style="font-size:13px;color:#6B6580;">Six reusable MoonTech styles</span>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,520px),1fr));gap:22px;">
+          <sc-for list="{{ coreRefs }}" as="r" hint-placeholder-count="6">
+            <div style="display:flex;flex-direction:column;border-radius:20px;overflow:hidden;background:#fff;border:1px solid #EEE8F6;">
+              <button onClick="{{ r.zoom }}" title="View larger" style="position:relative;padding:0;border:none;cursor:zoom-in;display:block;width:100%;aspect-ratio:16/10;background:#EEE8F6;overflow:hidden;">{{ r.imgEl }}</button>
+              <div style="padding:18px 20px 20px;display:flex;flex-direction:column;gap:10px;flex:1;">
+                <div style="display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:6px 12px;">
+                  <div style="font-family:'DM Serif Display',Georgia,serif;font-size:26px;line-height:1.1;">{{ r.n }}</div>
+                  <div style="display:flex;gap:4px;">
+                    <sc-for list="{{ r.aud }}" as="a" hint-placeholder-count="1"><span style="font-size:11px;font-weight:600;color:#6B6580;padding:2px 8px;border-radius:99px;background:#F5F2F8;">{{ a }}</span></sc-for>
+                  </div>
+                </div>
+                <div style="font-size:15px;line-height:1.45;color:#4A4560;text-wrap:pretty;">{{ r.d }}</div>
+                <div style="display:flex;flex-wrap:wrap;align-items:center;gap:6px;">
+                  <span style="font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:#8F89A3;margin-right:2px;">Best for</span>
+                  <sc-for list="{{ r.best }}" as="b" hint-placeholder-count="3"><button onClick="{{ b.go }}" style="border:1px solid #E7E1F3;cursor:pointer;background:#fff;color:#3E278D;font-size:12px;font-weight:700;padding:4px 10px;border-radius:99px;">{{ b.n }}</button></sc-for>
+                </div>
+                <button onClick="{{ r.view }}" style="margin-top:auto;align-self:flex-start;display:flex;align-items:center;gap:7px;border:none;cursor:pointer;font-size:13px;font-weight:800;padding:11px 16px;border-radius:99px;background:#3E278D;color:#fff;">View products in this style<i class="ph-duotone ph-arrow-right"></i></button>
+              </div>
+            </div>
+          </sc-for>
+        </div>
+      </section>
+      <section style="display:flex;flex-direction:column;gap:16px;padding-bottom:52px;">
+        <div style="display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:6px 14px;">
+          <h2 style="margin:0;font-family:'DM Serif Display',Georgia,serif;font-weight:400;font-size:30px;">More inspiration</h2>
+          <span style="font-size:13px;color:#6B6580;">Inspiration only, not MoonTech brand standards</span>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,340px),1fr));gap:18px;">
+          <sc-for list="{{ moreRefs }}" as="r" hint-placeholder-count="9">
+            <div style="display:flex;flex-direction:column;border-radius:20px;overflow:hidden;background:#fff;border:1px solid #EEE8F6;">
+              <button onClick="{{ r.zoom }}" title="View larger" style="position:relative;padding:0;border:none;cursor:zoom-in;display:block;width:100%;aspect-ratio:3/2;background:#EEE8F6;overflow:hidden;">{{ r.imgEl }}</button>
+              <div style="padding:14px 16px 16px;display:flex;flex-direction:column;gap:8px;flex:1;">
+                <div style="display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:6px 12px;">
+                  <div style="font-family:'DM Serif Display',Georgia,serif;font-size:20px;line-height:1.1;">{{ r.n }}</div>
+                  <div style="display:flex;gap:4px;">
+                    <sc-for list="{{ r.aud }}" as="a" hint-placeholder-count="1"><span style="font-size:11px;font-weight:600;color:#6B6580;padding:2px 8px;border-radius:99px;background:#F5F2F8;">{{ a }}</span></sc-for>
+                  </div>
+                </div>
+                <div style="font-size:13px;line-height:1.45;color:#4A4560;text-wrap:pretty;">{{ r.d }}</div>
+                <div style="display:flex;flex-wrap:wrap;align-items:center;gap:6px;">
+                  <span style="font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:#8F89A3;margin-right:2px;">Best for</span>
+                  <sc-for list="{{ r.best }}" as="b" hint-placeholder-count="3"><button onClick="{{ b.go }}" style="border:1px solid #E7E1F3;cursor:pointer;background:#fff;color:#3E278D;font-size:12px;font-weight:700;padding:4px 10px;border-radius:99px;">{{ b.n }}</button></sc-for>
+                </div>
+                <button onClick="{{ r.view }}" style="margin-top:auto;align-self:flex-start;display:flex;align-items:center;gap:7px;border:none;cursor:pointer;font-size:13px;font-weight:800;padding:9px 14px;border-radius:99px;background:#F1ECFA;color:#3E278D;">View products in this style<i class="ph-duotone ph-arrow-right"></i></button>
+              </div>
+            </div>
+          </sc-for>
+        </div>
+      </section>
+      <div style="display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:6px 14px;padding-bottom:14px;">
+        <h2 style="margin:0;font-family:'DM Serif Display',Georgia,serif;font-weight:400;font-size:30px;">Mockups by product</h2>
+        <span style="font-size:13px;color:#6B6580;">Concept mockups. Wording is exploratory, not approved messaging.</span>
+      </div>
+      <div style="display:flex;flex-wrap:wrap;align-items:center;gap:10px;padding-bottom:22px;">
+        <label style="display:flex;align-items:center;gap:6px;padding:0 4px 0 12px;border-radius:99px;background:#fff;border:1px solid #E7E1F3;font-size:13px;color:#6B6580;">
+          <span>Product</span>
+          {{ gProdEl }}
+        </label>
+        <sc-for list="{{ gStyles }}" as="c" hint-placeholder-count="7">
+          <button onClick="{{ c.go }}" style="display:flex;align-items:center;gap:7px;border:1px solid {{ c.border }};cursor:pointer;font-size:13px;font-weight:600;padding:6px 12px 6px 7px;border-radius:99px;background:{{ c.bg }};color:{{ c.fg }};"><span style="width:16px;height:16px;border-radius:50%;background:{{ c.sw }};border:1px solid rgba(27,23,48,.12);"></span><span>{{ c.label }}</span></button>
+        </sc-for>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:18px;">
+        <sc-for list="{{ gallery }}" as="d" hint-placeholder-count="9">
+          <div style="display:flex;flex-direction:column;border-radius:18px;overflow:hidden;background:#fff;border:1px solid #EEE8F6;">
+            <div style="position:relative;width:100%;aspect-ratio:4/3;"><div style="position:absolute;inset:0;">{{ d.art }}</div></div>
+            <div style="padding:12px 14px 14px;display:flex;flex-direction:column;gap:8px;flex:1;">
+              <div style="font-family:'DM Serif Display',Georgia,serif;font-size:19px;line-height:1.15;">{{ d.title }}</div>
+              <div style="display:flex;flex-wrap:wrap;gap:6px;">
+                <span style="font-size:12px;font-weight:700;padding:3px 9px;border-radius:99px;background:{{ d.audBg }};color:{{ d.audFg }};">{{ d.aud }}</span>
+                <span style="display:flex;align-items:center;gap:5px;font-size:12px;font-weight:600;padding:3px 9px 3px 4px;border-radius:99px;background:#F5F2F8;"><span style="width:13px;height:13px;border-radius:50%;background:{{ d.sw }};"></span>{{ d.style }}</span>
+              </div>
+              <div style="font-size:13px;line-height:1.45;color:#4A4560;">{{ d.line }}</div>
+              <button onClick="{{ d.go }}" style="margin-top:auto;align-self:flex-start;display:flex;align-items:center;gap:6px;border:none;cursor:pointer;background:none;color:#3E278D;font-size:13px;font-weight:800;padding:4px 0;">{{ d.goLabel }}<i class="ph-duotone ph-arrow-right"></i></button>
+            </div>
+          </div>
+        </sc-for>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ isSup }}" hint-placeholder-val="{{ false }}">
+      <section style="display:flex;flex-direction:column;gap:10px;padding:44px 0 22px;">
+        <h1 style="margin:0;font-family:'DM Serif Display',Georgia,serif;font-weight:400;font-size:clamp(32px,4.5vw,48px);line-height:1.05;">Suppliers</h1>
+        <p style="margin:0;font-size:15px;color:#6B6580;max-width:640px;text-wrap:pretty;">Chops and Jasani have sent quotes. Alwaha and Krossover Gifts catalogues are included. MOQ and lead time are not yet confirmed by any supplier.</p>
+      </section>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:16px;">
+        <sc-for list="{{ suppliers }}" as="s" hint-placeholder-count="6">
+          <div style="display:flex;flex-direction:column;gap:12px;padding:20px;border-radius:18px;background:#fff;border:1px solid #E7E1F3;">
+            <div style="display:flex;align-items:center;gap:12px;">
+              <div style="flex:none;width:44px;height:44px;border-radius:12px;background:#F1ECFA;color:#3E278D;display:flex;align-items:center;justify-content:center;font-family:'DM Serif Display',Georgia,serif;font-size:22px;">{{ s.initial }}</div>
+              <div style="display:flex;flex-direction:column;gap:2px;min-width:0;">
+                <div style="font-size:17px;font-weight:800;line-height:1.2;">{{ s.name }}</div>
+                <div style="font-size:13px;color:#6B6580;">{{ s.best }}</div>
+              </div>
+            </div>
+            <div style="display:flex;flex-wrap:wrap;gap:6px;">
+              <sc-for list="{{ s.badges }}" as="b" hint-placeholder-count="2"><span style="font-size:12px;font-weight:700;padding:4px 9px;border-radius:99px;background:{{ b.bg }};color:{{ b.fg }};">{{ b.label }}</span></sc-for>
+            </div>
+            <div style="display:grid;grid-template-columns:96px minmax(0,1fr);gap:6px 12px;font-size:13px;line-height:1.45;">
+              <span style="color:#6B6580;">In library</span><span>{{ s.inLib }}</span>
+              <span style="color:#6B6580;">Pricing</span><span>{{ s.pricing }}</span>
+              <span style="color:#6B6580;">Catalogue</span><span>{{ s.catStatus }}</span>
+              <span style="color:#6B6580;">MOQ / lead</span><span>{{ s.moqLead }}</span>
+            </div>
+            <sc-if value="{{ s.hasNote }}" hint-placeholder-val="{{ false }}">
+              <div style="font-size:12px;line-height:1.45;padding:9px 11px;border-radius:10px;background:#FAF1F7;color:#7E3F70;">{{ s.note }}</div>
+            </sc-if>
+            <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:auto;">
+              <sc-if value="{{ s.hasProducts }}" hint-placeholder-val="{{ false }}">
+                <button onClick="{{ s.browse }}" style="border:none;cursor:pointer;font-size:13px;font-weight:700;padding:8px 14px;border-radius:99px;background:#3E278D;color:#fff;">View products</button>
+              </sc-if>
+              <sc-if value="{{ s.hasCat }}" hint-placeholder-val="{{ false }}">
+                <a href="{{ s.cat }}" target="_blank" rel="noopener" style="font-size:13px;font-weight:700;padding:8px 14px;border-radius:99px;background:#1B1730;color:#fff;text-decoration:none;">View catalogue</a>
+              </sc-if>
+              <sc-if value="{{ s.hasQuote }}" hint-placeholder-val="{{ false }}">
+                <a href="{{ s.quote }}" target="_blank" rel="noopener" style="font-size:13px;font-weight:700;padding:7px 13px;border-radius:99px;border:1px solid #D9D0EE;color:#3E278D;text-decoration:none;">View quote</a>
+              </sc-if>
+              <sc-if value="{{ s.hasUrl }}" hint-placeholder-val="{{ false }}">
+                <a href="{{ s.url }}" target="_blank" rel="noopener" style="font-size:13px;font-weight:700;padding:7px 13px;border-radius:99px;border:1px solid #D9D0EE;color:#3E278D;text-decoration:none;">Visit website</a>
+              </sc-if>
+            </div>
+          </div>
+        </sc-for>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ isCart }}" hint-placeholder-val="{{ false }}">
+      <section style="display:flex;flex-direction:column;gap:8px;padding:44px 0 22px;">
+        <h1 style="margin:0;font-family:'DM Serif Display',Georgia,serif;font-weight:400;font-size:clamp(32px,4.5vw,48px);line-height:1.05;">Your merch cart</h1>
+        <p style="margin:0;font-size:15px;color:#6B6580;">A planning list, not a checkout. Saved in this browser.</p>
+      </section>
+      <sc-if value="{{ cartEmpty }}" hint-placeholder-val="{{ false }}">
+        <div style="display:flex;flex-direction:column;align-items:center;gap:14px;padding:70px 20px;border-radius:22px;background:#fff;border:1px dashed #D9D0EE;color:#6B6580;">
+          <i class="ph-duotone ph-shopping-bag" style="font-size:40px;color:#3E278D;"></i>
+          <span style="font-size:16px;">Your cart is empty.</span>
+          <button onClick="{{ goShop }}" style="border:none;cursor:pointer;background:#3E278D;color:#fff;font-size:14px;font-weight:700;padding:11px 20px;border-radius:99px;">Browse products</button>
+        </div>
+      </sc-if>
+      <sc-if value="{{ cartHas }}" hint-placeholder-val="{{ false }}">
+        <div style="display:flex;flex-wrap:wrap;gap:24px;align-items:flex-start;">
+          <div style="flex:1 1 560px;min-width:0;display:flex;flex-direction:column;gap:12px;">
+            <sc-for list="{{ cartLines }}" as="l" hint-placeholder-count="3">
+              <div style="display:flex;flex-wrap:wrap;gap:16px;align-items:center;padding:14px;border-radius:18px;background:#fff;border:1px solid #E7E1F3;">
+                <button onClick="{{ l.open }}" style="flex:none;position:relative;width:88px;height:88px;padding:0;border:none;border-radius:12px;overflow:hidden;cursor:pointer;background:#F7F4FB;">
+                  <sc-if value="{{ l.isImg }}" hint-placeholder-val="{{ true }}">{{ l.imgEl }}</sc-if>
+                  <sc-if value="{{ l.isArt }}" hint-placeholder-val="{{ false }}"><div style="position:absolute;inset:0;">{{ l.art }}</div></sc-if>
+                </button>
+                <div style="flex:1 1 200px;min-width:0;display:flex;flex-direction:column;gap:3px;">
+                  <div style="font-family:'DM Serif Display',Georgia,serif;font-size:19px;line-height:1.15;">{{ l.n }}</div>
+                  <div style="font-size:13px;color:#4A4560;line-height:1.35;"><strong>{{ l.s }}</strong> · {{ l.vname }}</div>
+                  <div style="font-size:12px;color:#8F89A3;">{{ l.ref }}</div>
+                  <div style="display:flex;flex-wrap:wrap;gap:5px;margin-top:3px;">
+                    <span style="font-size:11px;font-weight:700;padding:2px 8px;border-radius:99px;background:{{ l.stBg }};color:{{ l.stFg }};">{{ l.st }}</span>
+                    <span style="font-size:11px;font-weight:600;padding:2px 8px;border-radius:99px;background:#F5F2F8;color:#6B6580;">{{ l.vat }}</span>
+                  </div>
+                </div>
+                <label style="display:flex;align-items:center;gap:6px;padding:0 4px 0 12px;border-radius:99px;background:#F7F4FB;font-size:13px;color:#6B6580;max-width:220px;">
+                  <span>Supplier</span>
+                  {{ l.supEl }}
+                </label>
+                <label style="display:flex;align-items:center;gap:6px;padding:0 4px 0 12px;border-radius:99px;background:#F7F4FB;font-size:13px;color:#6B6580;">
+                  <span>Qty</span>
+                  {{ l.qtyEl }}
+                </label>
+                <div style="flex:0 0 150px;text-align:right;display:flex;flex-direction:column;gap:2px;">
+                  <span style="font-size:16px;font-weight:800;color:{{ l.fg }};font-feature-settings:'tnum';">{{ l.total }}</span>
+                  <span style="font-size:12px;color:#8F89A3;font-feature-settings:'tnum';">{{ l.unit }}</span>
+                </div>
+                <button onClick="{{ l.remove }}" title="Remove" style="flex:none;width:36px;height:36px;border-radius:50%;border:none;cursor:pointer;background:#F5F2F8;color:#6B6580;display:flex;align-items:center;justify-content:center;"><i class="ph-duotone ph-trash" style="font-size:17px;"></i></button>
+              </div>
+            </sc-for>
+          </div>
+          <aside style="flex:1 1 300px;max-width:420px;position:sticky;top:90px;display:flex;flex-direction:column;gap:12px;padding:22px;border-radius:20px;background:#1B1730;color:#fff;">
+            <div style="font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#C9BCF2;">Summary</div>
+            <div style="display:flex;justify-content:space-between;gap:10px;font-size:14px;"><span style="color:#C9BCF2;">{{ sumItems }}</span><span></span></div>
+            <div style="display:flex;justify-content:space-between;gap:10px;font-size:15px;"><span>Confirmed subtotal (excl. VAT)</span><span style="font-weight:700;font-feature-settings:'tnum';">{{ sumSub }}</span></div>
+            <div style="display:flex;justify-content:space-between;gap:10px;font-size:14px;color:#C9BCF2;"><span>VAT 5%</span><span style="font-feature-settings:'tnum';">{{ sumVat }}</span></div>
+            <div style="display:flex;justify-content:space-between;gap:10px;padding-top:12px;border-top:1px solid rgba(255,255,255,.15);"><span style="font-size:15px;font-weight:700;">Confirmed estimated total<br><span style="font-size:12px;font-weight:500;color:#C9BCF2;">incl. 5% VAT</span></span><span style="font-size:24px;font-weight:800;font-feature-settings:'tnum';">{{ sumTotal }}</span></div>
+            <sc-if value="{{ hasPendingItems }}" hint-placeholder-val="{{ false }}">
+              <div style="font-size:13px;line-height:1.45;padding:10px 12px;border-radius:12px;background:rgba(243,196,221,.16);color:#F3C4DD;">{{ pendingLine }}</div>
+            </sc-if>
+            <div style="font-size:12px;line-height:1.5;color:#A9A2C2;">Totals use quoted unit prices at the selected quantity. MOQ and lead times are not confirmed.</div>
+            <div style="display:flex;flex-direction:column;gap:8px;padding-top:6px;">
+              <button onClick="{{ openSheet }}" style="display:flex;align-items:center;justify-content:center;gap:8px;border:none;cursor:pointer;font-size:14px;font-weight:800;padding:12px 16px;border-radius:12px;background:#fff;color:#3E278D;"><i class="ph-duotone ph-table" style="font-size:18px;"></i>Save to Google Sheet</button>
+              <div style="display:flex;gap:8px;">
+                <button onClick="{{ downloadCsv }}" style="flex:1;display:flex;align-items:center;justify-content:center;gap:6px;cursor:pointer;font-size:13px;font-weight:700;padding:10px 12px;border-radius:12px;background:transparent;border:1px solid rgba(255,255,255,.3);color:#fff;"><i class="ph-duotone ph-file-csv" style="font-size:17px;"></i>Download CSV</button>
+                <button onClick="{{ openPrint }}" style="flex:1;display:flex;align-items:center;justify-content:center;gap:6px;cursor:pointer;font-size:13px;font-weight:700;padding:10px 12px;border-radius:12px;background:transparent;border:1px solid rgba(255,255,255,.3);color:#fff;"><i class="ph-duotone ph-printer" style="font-size:17px;"></i>Print / Save PDF</button>
+              </div>
+            </div>
+            <button onClick="{{ clearCart }}" style="align-self:flex-start;border:none;cursor:pointer;background:none;color:#C9BCF2;font-size:13px;font-weight:700;padding:0;text-decoration:underline;">Clear cart</button>
+          </aside>
+        </div>
+      </sc-if>
+    </sc-if>
+  </main>
+
+  <sc-if value="{{ hasZoom }}" hint-placeholder-val="{{ false }}">
+    <div onClick="{{ closeZoom }}" style="position:fixed;inset:0;z-index:70;background:rgba(27,23,48,.88);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:28px;cursor:zoom-out;">
+      <div style="width:min(1400px,100%);max-height:calc(100vh - 120px);display:flex;justify-content:center;">{{ zoomEl }}</div>
+      <div style="display:flex;align-items:center;gap:16px;color:#fff;"><span style="font-family:'DM Serif Display',Georgia,serif;font-size:24px;">{{ zoomName }}</span><span style="font-size:13px;color:#C9BCF2;">Click anywhere to close</span></div>
+    </div>
+  </sc-if>
+  <sc-if value="{{ hasModal }}" hint-placeholder-val="{{ false }}">
+    <div onClick="{{ closeModal }}" style="position:fixed;inset:0;z-index:60;background:rgba(27,23,48,.45);"></div>
+    <div style="position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);z-index:61;width:min(520px,calc(100vw - 32px));max-height:calc(100vh - 40px);overflow-y:auto;display:flex;flex-direction:column;gap:16px;padding:26px;border-radius:22px;background:#FBF8F3;box-shadow:0 24px 60px rgba(27,23,48,.3);">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px;">
+        <div style="display:flex;flex-direction:column;gap:4px;">
+          <h2 style="margin:0;font-family:'DM Serif Display',Georgia,serif;font-weight:400;font-size:28px;line-height:1.1;">{{ mTitle }}</h2>
+          <span style="font-size:13px;color:#6B6580;">{{ mSub }}</span>
+        </div>
+        <button onClick="{{ closeModal }}" style="flex:none;width:36px;height:36px;border-radius:50%;border:none;cursor:pointer;background:#F1ECFA;color:#3E278D;display:flex;align-items:center;justify-content:center;"><i class="ph-duotone ph-x" style="font-size:16px;"></i></button>
+      </div>
+      <sc-if value="{{ mForm }}" hint-placeholder-val="{{ true }}">
+        <div style="display:flex;flex-direction:column;gap:12px;">
+          <label style="display:flex;flex-direction:column;gap:5px;font-size:13px;font-weight:700;color:#1B1730;">
+            <span>Selection name <span style="color:#AD5C9A;">{{ nameReq }}</span></span>
+            <input value="{{ mName }}" onChange="{{ onMName }}" placeholder="e.g. Creator programme kit, Q1" style="font-size:15px;font-weight:500;padding:11px 13px;border-radius:12px;border:1.5px solid {{ nameBorder }};background:#fff;outline:none;color:#1B1730;">
+          </label>
+          <label style="display:flex;flex-direction:column;gap:5px;font-size:13px;font-weight:700;color:#1B1730;">
+            <span>Purpose / event <span style="font-weight:500;color:#8F89A3;">optional</span></span>
+            <input value="{{ mPurpose }}" onChange="{{ onMPurpose }}" placeholder="e.g. Brand partner gifting" style="font-size:15px;font-weight:500;padding:11px 13px;border-radius:12px;border:1.5px solid #E7E1F3;background:#fff;outline:none;color:#1B1730;">
+          </label>
+          <label style="display:flex;flex-direction:column;gap:5px;font-size:13px;font-weight:700;color:#1B1730;">
+            <span>Created by <span style="font-weight:500;color:#8F89A3;">optional</span></span>
+            <input value="{{ mBy }}" onChange="{{ onMBy }}" placeholder="Your name" style="font-size:15px;font-weight:500;padding:11px 13px;border-radius:12px;border:1.5px solid #E7E1F3;background:#fff;outline:none;color:#1B1730;">
+          </label>
+          <label style="display:flex;flex-direction:column;gap:5px;font-size:13px;font-weight:700;color:#1B1730;">
+            <span>Notes <span style="font-weight:500;color:#8F89A3;">optional</span></span>
+            {{ notesEl }}
+          </label>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:6px;padding:12px 14px;border-radius:14px;background:#fff;border:1px solid #E7E1F3;font-size:13px;">
+          <div style="display:flex;justify-content:space-between;gap:10px;"><span style="color:#6B6580;">Items</span><span style="font-weight:700;">{{ cartCount }}</span></div>
+          <div style="display:flex;justify-content:space-between;gap:10px;"><span style="color:#6B6580;">Confirmed estimated total</span><span style="font-weight:800;font-feature-settings:'tnum';">{{ sumTotal }}</span></div>
+          <div style="display:flex;justify-content:space-between;gap:10px;"><span style="color:#6B6580;">Items awaiting quote</span><span style="font-weight:700;">{{ pendCount }}</span></div>
+        </div>
+        <sc-if value="{{ hasMErr }}" hint-placeholder-val="{{ false }}">
+          <div style="font-size:13px;line-height:1.45;padding:10px 12px;border-radius:12px;background:#FBEAEA;color:#A2322A;">{{ mErr }}</div>
+        </sc-if>
+        <div style="display:flex;justify-content:flex-end;gap:10px;">
+          <button onClick="{{ closeModal }}" style="border:none;cursor:pointer;background:none;color:#6B6580;font-size:14px;font-weight:700;padding:12px 14px;">Cancel</button>
+          <button onClick="{{ mSubmit }}" style="display:flex;align-items:center;gap:8px;border:none;cursor:pointer;font-size:15px;font-weight:800;padding:12px 20px;border-radius:12px;background:#3E278D;color:#fff;opacity:{{ mBtnOp }};"><i class="{{ mIcon }}" style="font-size:18px;"></i>{{ mBtn }}</button>
+        </div>
+      </sc-if>
+      <sc-if value="{{ mDone }}" hint-placeholder-val="{{ false }}">
+        <div style="display:flex;flex-direction:column;align-items:center;gap:10px;padding:18px 10px 6px;text-align:center;">
+          <i class="ph-duotone ph-check-circle" style="font-size:46px;color:#1E8E5A;"></i>
+          <div style="font-size:18px;font-weight:800;">Selection saved successfully</div>
+          <div style="font-size:14px;color:#4A4560;">Selection ID</div>
+          <div style="font-size:18px;font-weight:800;font-family:ui-monospace,Menlo,monospace;padding:8px 14px;border-radius:10px;background:#F1ECFA;color:#3E278D;">{{ selId }}</div>
+          <button onClick="{{ closeModal }}" style="margin-top:6px;border:none;cursor:pointer;font-size:14px;font-weight:800;padding:11px 20px;border-radius:12px;background:#3E278D;color:#fff;">Done</button>
+        </div>
+      </sc-if>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ hasToast }}" hint-placeholder-val="{{ false }}">
+    <div style="position:fixed;left:50%;bottom:24px;transform:translateX(-50%);z-index:50;display:flex;align-items:center;gap:14px;padding:12px 14px 12px 18px;border-radius:99px;background:#1B1730;color:#fff;box-shadow:0 12px 30px rgba(27,23,48,.25);font-size:14px;">
+      <i class="ph-duotone ph-check-circle" style="font-size:20px;color:#C9BCF2;"></i><span>{{ toast }}</span>
+      <button onClick="{{ goCart }}" style="border:none;cursor:pointer;background:#fff;color:#3E278D;font-size:13px;font-weight:800;padding:7px 13px;border-radius:99px;">View cart</button>
+    </div>
+  </sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+
+const QTY=[25,50,100,200,500];
+const CH={1:['5000mAh 3-in-1 Card Holder Powerbank',[75.72,68.26,62.64,57.97]],2:['BAM POWER: 10,000mAh MagSafe Power Bank, 15W wireless',[99.36,90.10,83.20,77.25]],3:['Magsafe Powerbank',[62.56,56.10,51.20,47.25]],4:['Maglite 5K - 5000 mAh Magnetic Wireless Power Bank - White',[57.04,51.00,46.40,42.75]],
+6:['Magfold 3 in 1 Wireless Charger Stand - Metallic Grey',[103.22,93.67,86.56,80.40]],7:['3-in-1 Magnetic Wireless Charger Desk Tray - Black',[82.34,74.38,68.40,63.38]],8:['Bamboo Wireless Charger 15W Fast Charging & LED Logo',[40.48,35.70,32.00,29.25]],9:['Eco-Friendly Bamboo 10W Wireless Charger Stand',[36.80,32.30,28.80,26.25]],10:['3 in 1 Wireless Fast Charging Station with Ambient Light',[85.74,77.52,71.36,66.15]],11:['ZERO Recycled 3-in-1 Wireless Charger Station - Black',[80.68,72.85,66.96,62.03]],
+13:['3-in-1 Multi-Device Charging Cable - Black',[16.56,13.60,11.20,9.75]],16:['Multi Functional Charging Cable Card Kit',[26.59,22.87,19.92,17.92]],17:['Curled Cable & Adapter Kit',[31.56,27.46,24.24,21.98]],19:['3-in-1 Charging Cable with Light-Up Logo - Black',[23.00,19.55,16.80,15.00]],20:['Light Up Multi Charging Cable',[22.08,18.70,16.00,14.25]],
+23:['Travel Adaptor',[49.68,44.20,40.00,36.75]],24:['Travel Adapter',[34.22,29.92,26.56,24.15]],25:['World Travel Adapter MUV USB 2A',[85.38,77.18,71.04,65.85]],26:['World Travel Adapter MUV Micro',[59.16,52.96,48.24,44.47]],
+31:['Wireless Speaker Lantern - White',[70.10,63.07,57.76,53.40]],32:['Portable Bluetooth Speaker with Light Up Logo and Lanyard',[66.24,59.50,54.40,50.25]],36:['Recycled Canvas A5 Hard Cover Notebook with PU Pocket - Black',[19.96,16.74,14.16,12.52]],37:['eco-neutral A5 Cork Fabric Hard Cover Notebook and Pen Set - Black',[20.42,17.17,14.56,12.90]],
+48:['Recycled Stainless Steel Bottle with Dual Sip Lid - Black',[61.82,55.42,50.56,46.65]],49:['Double Wall Stainless Steel Bottle 500ml - Black',[30.91,26.86,23.68,21.45]],55:['Promotional Double Wall Stainless Steel Water Bottle - Black',[25.67,22.01,19.12,17.17]],56:['Recycled Stainless Steel Tumbler with Reusable Straw - Black',[70.93,63.83,58.48,54.08]],57:['Insulated Tumbler with Grip Sleeve 530ml - Black',[45.54,40.38,36.40,33.38]],61:['Vacuum Mug With Cork Base - Black',[58.33,52.19,47.52,43.80]],63:['Insulated Mug / Tumbler with Cork Base - White',[31.83,27.71,24.48,22.20]],
+65:['GRS-certified Recycled Cotton Tote Bag - Black',[14.90,12.07,9.76,8.40]],66:['Eco Friendly Cotton Shopping Bag With Gusset - Natural',[14.72,11.90,9.60,8.25]],68:['Large-Capacity Tote Bag with 1680D PU Bottom - Black',[29.44,25.50,22.40,20.25]],69:['20mm 2 in 1 Sublimation Lanyard',[10.12,7.65,5.60,4.50]],72:['Lanyard with Reel Badge and Safety Lock - Black',[11.96,9.35,7.20,6.00]],74:['Aluminum Button Badges - 44 mm',[8.00,5.70,3.76,2.78]],77:['Bamboo Phone Stand Keychain',[10.76,8.24,6.16,5.03]],79:['4-in-1 Multi-Utility Keychain',[17.02,14.03,11.60,10.13]],
+83:['Elegant Notebook, Metal Pen, and Bookmark Gift Set - Black',[79.12,69.70,62.40,55.50]],84:['ZERO Sustainable 5pc Onboarding Gift Set - Black',[147.48,127.76,112.24,102.23]],85:['Magnetic Gift Set',[134.32,115.60,100.80,91.50]],86:['ZERO Sustainable 5pc Gratitude Gift Set - Black',[168.64,147.31,130.64,119.48]],87:['Premium 5-Piece Professional Gift Set (PU notebook, metal pen, card holder, keychain) - Green',[110.40,93.50,80.00,72.00]],89:['Gift Set of Tumbler, Notebook and Pen - Black',[102.67,91.46,82.88,71.70]]};
+const MK='M392.5,133.2v1.3c-4.4,1.1-8.1,3.7-11.7,6.6-1,.8-1.8,1.8-2.6,2.8-.8,1-1.9,1.1-2.6,0-2.2-3.1-5.1-5-8-6.8-1.9-1.2-3.8-2.2-6-2.6-.8-.1-.3-.9-.4-1.3,4.7-1.2,8.7-3.9,12.4-7.2.7-.6,1.3-1.5,1.9-2.2.8-1,1.9-1.1,2.6-.1,2.3,3.1,5.3,5,8.3,6.9,1.9,1.2,3.9,2.2,6.1,2.6h0Z';
+const f2=n=>n.toFixed(2);
+const AUD={cr:{label:'Creators / Influencers',short:'Creators',icon:'ph-duotone ph-video-camera',desc:'Expressive, useful kit for people who film, travel and post.',bg:'#EDE6F7',fg:'#3E278D'},
+br:{label:'Brands',short:'Brands',icon:'ph-duotone ph-handshake',desc:'Premium, understated pieces for brand partners and their teams.',bg:'#E6E3E9',fg:'#1B1730'},
+ge:{label:'General / MoonTech Brand Awareness',short:'General',icon:'ph-duotone ph-megaphone',desc:'Recognisably MoonTech merch that works at scale.',bg:'#F6EAF1',fg:'#7E3F70'}};
+const VER={cr:'Creator version',br:'Brand version',ge:'General version'};
+const CATS=['All','Tech','Phone accessories','Bags & sleeves','Drinkware','Desk & notebooks','Travel','Apparel','Gift sets','Event essentials'];
+const KS='Alwaha',KSRC='Alwaha CATALOG 2026–2027',KGS='Krossover Gifts';
+const KG=(id,n,cat,a,img,code,spec,pg)=>({id,n,cat,a,img:'kg-'+img+'.jpg',fit:'cover',s:KGS,code,full:code,spec,qt:null,doc:'Krossover Gifts, Promotional Gifts 2026 catalogue, page '+pg,alts:[],sim:[]});
+const G=r=>({s:'Giftium',ref:r,src:'giftium.ae product listing'});
+const chT=n=>{const c=CH[n];return c?{50:c[1][0],100:c[1][1],200:c[1][2],500:c[1][3]}:null;};
+const C=(id,n,cat,a,ch,alts,sim,cmp)=>({id,n,cat,a,ch,img:'chops-'+String(ch).padStart(2,'0')+'.jpg',fit:'contain',s:'Chops',code:'PL-0011 item '+ch,full:'PL-0011 item '+ch+' · '+(CH[ch]?CH[ch][0]:''),spec:'Production: with print',qt:chT(ch),doc:'Chops price list PL-0011 for MoonTech (6 Oct 2026, valid until 20 Oct 2026)',inc:'product with logo print, as quoted.',alts:(alts||[]).map(x=>({name:CH[x]?CH[x][0]:'',ref:'PL-0011 item '+x,qt:chT(x)})),sim:sim||[],cmp});
+const jt=t=>({25:t[0],50:t[1],100:t[2]});
+const J=(id,n,cat,a,pg,code,full,spec,t,brand,alts,cmp)=>({id,n,cat,a,img:'jasani-'+pg+'.png',fit:'contain',s:'Jasani',code,full,spec,qt:jt(t),doc:'Jasani quotation for MoonTech, page '+(+pg),inc:'product with '+brand+', as quoted.',alts:(alts||[]).map(x=>({name:x[0],ref:x[1],qt:jt(x[2])})),sim:[],cmp});
+const K=(id,n,cat,a,img,code,spec,pg)=>({id,n,cat,a,img:'cat-'+img+'.jpg',fit:'cover',s:KS,code,full:code+' (catalogue model name)',spec,qt:null,doc:KSRC+', page '+pg,alts:[],sim:[]});
+const P=[
+C('c01','Card Holder Power Bank','Phone accessories',['cr'],1),
+C('c03','MagSafe Power Bank','Tech',['cr','ge'],3,[4,2],[G('Magnetic Fast Wireless Charging Powerbank, 10000mAh')]),
+J('j02','Magnetic Wireless Power Bank in Gift Box','Tech',['cr','br'],'02','Tovuz','Tovuz - 10,000 mAh Magnetic Wireless Powerbank in Gift Box','10,000mAh; magnetic ring for non-MagSafe phones; magnetic-closing gift box',[57.05,53.55,53.20],'digital UV print'),
+J('j03','Maglite 10K Magnetic Power Bank','Tech',['cr','ge'],'03','Maglite 10K','Maglite 10K - 10000 mAh Magnetic Wireless Power Bank - Black','MagSafe-compatible; 15W wireless; PD 22.5W Type-C',[58.87,55.37,55.02],'digital UV print'),
+J('j04','Universal Power Bank with Built-in Cables','Tech',['cr'],'04','Rotterdam','Rotterdam - 10,000mAh Universal Wireless Powerbank with inbuilt cables - Black','5-in-1; two 15W magnetic wireless chargers; inbuilt Lightning and Type-C; PD 20W',[79.10,75.60,75.25],'digital UV print'),
+K('k-satraa','10,000mAh MagSafe Power Bank with Built-in Cables','Tech',['cr'],'138','SATRAA','15W MagSafe-compatible; built-in USB-C, Lightning and Micro-USB',73),
+C('c06','Foldable 3-in-1 Wireless Charger Stand','Tech',['cr','br'],6,[],[],{j:'j19'}),
+J('j19','Magfold 3-in-1 Wireless Charger Stand','Tech',['cr','br'],'19','ARGENE','ARGENE - @memorii Magfold 3 in 1 Wireless Charger Stand - Metallic Grey','Phone 15W, Apple Watch 2.5W, AirPods 5W; foldable; ABS, PC and aluminium',[85.40,81.20,80.53],'laser engraving',[],{ch:6}),
+C('c16','Charging Cable Card Kit','Tech',['cr','ge'],16,[17]),
+C('c19','3-in-1 Charging Cable with Light-Up Logo','Tech',['ge'],19,[20,13]),
+K('k-mukree','3-in-1 Cable with Light-Up Logo','Tech',['ge'],'131','MUKREE','iOS, Micro USB and Type-C; dual-sided light-up logo',70),
+K('k-ecocord','Retractable 4-in-1 Cable, Wheat Fibre','Tech',['ge'],'134','ECO CORD','Wheat fibre and bamboo; kraft gift box; 4cm branding area',71),
+C('c32','Bluetooth Speaker with Light-Up Logo','Tech',['cr'],32,[31]),
+J('j09','Recycled Bluetooth Speaker','Tech',['ge','cr'],'09','Asperg','Asperg - Recycled Wireless Bluetooth Speaker','Recycled plastic and FSC bamboo; BT 5.1; 6 hours playtime',[51.80,48.30,47.95],'screen printing'),
+J('j10','Retro Portable Speaker, Beige / Gold','Tech',['cr'],'10','FELIX','FELIX - @memorii Portable Wireless Speaker - Beige / Gold','Leatherette; wrist lanyard; ambient light; also in Black / Silver',[76.93,73.43,73.08],'digital UV print'),
+K('k-perdo','Speaker with Wireless Charging','Tech',['cr'],'145','PERDO','Bluetooth speaker, 15W wireless charger and phone stand',77),
+K('k-vish','Noise-Cancelling Headphones','Tech',['cr','br'],'146','VISH','Adaptive noise cancelling, 4000mAh battery',78),
+K('k-itag','Bluetooth Key Finder','Tech',['ge','cr'],'143','ITAG','App-based tracking, anti-lost alert, 3.5cm',76),
+K('k-diyfo','Hard-Shell Case with Shapeable Foam','Tech',['cr'],'047','DIYFO','Hard shell, DIY foam insert, supplied empty',26),
+K('k-veemag','Magnetic Phone Wallet & Stand','Phone accessories',['cr','br'],'141','VEEMAG','PU leather; holds 3 cards; folds into a portrait or landscape stand',75),
+K('k-andash','Magnetic Phone Mount','Phone accessories',['cr'],'142','ANDASH','360° rotatable; suction and magnetic base',76),
+K('k-veehold','V-Shaped Phone Holder','Phone accessories',['ge'],'140','VEEHOLD','Plastic desk phone holder, 11 × 3cm',75),
+C('c77','Bamboo Phone Stand Keychain','Phone accessories',['ge','cr'],77,[79]),
+K('k-porticase','Laptop Sleeve with Leather Trims','Bags & sleeves',['br','cr'],'053','PORTICASE','Fits up to 15.6″; suede interior; exterior zip pocket',29),
+K('k-slapt','Neoprene Laptop Sleeve','Bags & sleeves',['cr','ge'],'055','SLAPT','4mm neoprene; fits up to 15″',30),
+K('k-tabshell','Leatherette Tablet Holder','Bags & sleeves',['br'],'054','TABSHELL','Padded leatherette; up to 8″ device',30),
+K('k-extender','Expandable Laptop Backpack','Bags & sleeves',['br','cr'],'040','EXTENDER','Waterproof oxford; padded 17″ laptop compartment; expandable',23),
+K('k-acery','Padded Tech Pouch','Bags & sleeves',['cr'],'044','ACERY','Padded main compartment, waterproof zip, side handle',25),
+K('k-tach','Carry Pouch with Branding Patch','Bags & sleeves',['cr','br'],'045','TACH','15 × 10 × 21.5cm; dedicated logo area',25),
+C('c65','Recycled Cotton Tote','Bags & sleeves',['ge','cr'],65,[66,68]),
+J('j23','Recycled Cotton Tote, 140GSM','Bags & sleeves',['ge'],'23','Ablar','Ablar - GRS-certified Recycled Cotton Tote Bag – 140GSM','GRS-certified recycled cotton; 42 × 36cm',[20.02,13.02,9.52],'screen printing'),
+J('j24','Recycled Cotton Tote with Gusset, 300GSM','Bags & sleeves',['ge','cr'],'24','Dargun','Dargun – Recycled Cotton Tote Bag with Gusset – 300GSM','GRS-certified recycled cotton; 42 × 38 × 10cm',[23.66,16.66,13.16],'screen printing'),
+C('c48','Recycled Steel Bottle, Dual Sip Lid','Drinkware',['br','cr'],48),
+C('c49','Double Wall Steel Bottle 500ml','Drinkware',['ge'],49,[55],[G('ATM 11 Stainless Steel Drinkware')]),
+J('j11','Vacuum Flask 500ml with Cup Lid','Drinkware',['ge'],'11','Tavas','Tavas - Double Walled Vacuum Flask 500ml','Double walled; 250ml lid doubles as a cup',[34.44,28.84,27.44],'laser engraving'),
+J('j12','Insulated Bottle with Cork Base 500ml','Drinkware',['br','ge'],'12','Creil','Creil Insulated Water Bottle with Cork Base – 500ml','Carry handle; cork base',[36.40,30.80,29.40],'laser engraving'),
+J('j13','SummitGrip Thermal Flask 710ml','Drinkware',['cr','br'],'13','THERMORA','THERMORA - Hans Larsen SummitGrip Thermal Flask 710 ml - Black','Hot 12h / cold 24h; dual lid; grip handle; black, navy or white',[43.12,37.52,36.12],'laser engraving'),
+K('k-yosip','Bottle with Magnetic Phone Holder','Drinkware',['cr'],'013','YOSIP','550ml stainless steel; magnetic loop doubles as phone holder',9),
+K('k-flacon','Smart Bottle with LED Temperature','Drinkware',['ge','br'],'014','FLACON','500ml 304 stainless steel; LED temperature display',9),
+K('k-sqram','Tumbler with Straw 630ml','Drinkware',['cr','ge'],'018','SQRAMBLER','630ml stainless steel tumbler with straw',11),
+J('j20','Ceramic Mug with Cork and Lid','Drinkware',['ge'],'20','Lucca','Lucca - Ceramic Mug with Cork and Lid','Ceramic with cork; sublimation possible on white',[16.10,11.90,9.80],'screen printing'),
+J('j21','Ceramic Mug with Bamboo Lid 300ml','Drinkware',['ge','br'],'21','Sevilla','Sevilla - Ceramic Mug with Bamboo Lid','Matt ceramic; bamboo lid doubles as a coaster',[20.30,16.10,14.00],'screen printing'),
+J('j22','Ceramic Cup with Wide Grip 400ml','Drinkware',['ge'],'22','Fallo','Fallo - Ceramic Cup with Wide Grip 400 ml','400ml ceramic',[15.68,11.48,9.38],'screen printing'),
+K('k-chuvo','Desk Mat with Wireless Charging','Desk & notebooks',['br','cr'],'149','CHUVO','15W wireless charging, light-up logo, pen and phone holder',79),
+C('c07','3-in-1 Magnetic Wireless Charger Desk Tray','Desk & notebooks',['br'],7,[11]),
+C('c10','3-in-1 Charging Station with Ambient Light','Desk & notebooks',['br'],10,[11]),
+K('k-kalua','Foldable 3-in-1 Charging Station','Desk & notebooks',['br'],'137','KALUA','Phone, watch and earbuds; magnetic; night light',73),
+J('j18','A5 Portfolio with MagSafe Charger','Desk & notebooks',['br','cr'],'18','MagFolio','MagFolio - Santhome A5 PU Portfolio with 15W MagSafe Wireless Charger - Black','15W wireless charger; stand with pen holder; 4 card slots; kraft box',[61.81,56.21,55.51],'digital UV print'),
+J('j17','Smart A5 Organiser with Power Bank','Desk & notebooks',['br'],'17','SOLAIS','SOLAIS - Santhome Recycled 10000 mAh Power Bank with 15W Magsafe Smart A5 Organizer - Grey','10,000mAh; MagSafe 15W; 8GB flash drive; LED lamp; light-up logo; gift box',[197.96,192.60,191.66],'digital UV print'),
+K('k-magknote','Wireless Charging Organiser','Desk & notebooks',['br'],'079','MAGKNOTE','Diary organiser with 8,000mAh power bank and 15W wireless charging',43),
+K('k-cardano','A4 Zip Portfolio','Desk & notebooks',['br'],'078','CARDANO','A4 zip folder with notepad, calculator and card slots',43),
+C('c36','Recycled Canvas A5 Notebook','Desk & notebooks',['br','ge'],36,[37]),
+J('j15','Expanded A5 Hard Cover Notebook','Desk & notebooks',['br'],'15','Baron','Baron - Expanded A5 Hard Cover Notebook','288 pages, 80gsm; pen loop; end-paper pocket',[31.08,20.58,15.33],'debossing'),
+J('j14','A5 PU Notebook with Pen Loop','Desk & notebooks',['ge'],'14','Jursi','Jursi - A5 PU Notebook with Pen Loop','A5; 192 pages; PU cover',[11.06,7.56,7.21],'digital UV print'),
+K('k-caro','A5 Fabric Notebook','Desk & notebooks',['ge'],'063','CARO','A5, 96 lined sheets, pen loop, 5 colours',35),
+J('j07','Twist Metal Pen','Desk & notebooks',['br'],'07','Goslar','Goslar Metal Pen','Twist action; blue ink',[14.91,12.11,10.71],'laser engraving',[['Billund Metal Ballpen','Jasani · page 6 · digital UV print',[7.70,4.90,3.50]],['Halle - Metal Pen (PU wrapped barrel)','Jasani · page 8 · laser engraving',[12.04,9.24,7.84]]]),
+K('k-credent','Leather Card Case','Desk & notebooks',['br'],'247','CREDENT','Leather business card case',141),
+K('k-casey','Accessory Organiser Pouch','Travel',['cr','br'],'046','CASEY','Compact, water-resistant cable and accessory organiser',26),
+K('k-blit','Cable & SIM Card Organiser','Travel',['cr'],'135','BLIT','USB-C cable with Lightning and Micro USB converters; SIM storage',72),
+C('c23','Travel Adaptor','Travel',['cr','ge'],23,[24],[G('AD 02 International Universal Travel Adapter')]),
+C('c25','World Travel Adapter MUV USB 2A','Travel',['br'],25,[26]),
+J('j27','Skross World Travel Adapter MUV Micro','Travel',['br','cr'],'27','Skross MUV Micro','Skross World Travel Adapter MUV Micro','Compact world adapter; 2-year warranty; Skross gift box',[48.65,45.15,44.80],'digital UV print',[],{ch:26}),
+K('k-yager','GaN Travel Adapter 20W PD','Travel',['cr','br'],'157','YAGER','2 × USB-C, 1 × USB-A; 150+ countries',83),
+K('k-pacho','Passport Case','Travel',['br'],'152','PACHO','Textured leatherette; card and SIM slots',81),
+K('k-bopas','Passport Cover & Luggage Tag Set','Travel',['br'],'153','BOPAS','PU passport cover with matching luggage tag, boxed',81),
+K('k-intag','Leatherette Luggage Tag','Travel',['br','cr'],'155','INTAG','7 × 12cm leatherette',82),
+K('k-lugtag','PU Luggage Tag','Travel',['ge'],'156','LUGGAGE TAG','PU, black or gold, 7 × 12cm',83),
+K('k-pushion','Metal Card Holder','Travel',['br'],'252','PUSHION','RFID-blocking metal; push mechanism; 6–7 cards',143),
+K('k-rfid','RFID Card Wallet','Travel',['br'],'246','RFID CARDCASE','RFID-blocking leather, 8 × 10.3cm',140),
+J('j05','PU & Metal Keychain','Travel',['br','ge'],'05','Lagos','Lagos - Keychain','Black PU and metal. Supplier image on the quote page covers the keychain range',[10.85,8.05,6.65],'laser engraving',[['Porto - Keychain (PU, matte nickel pull ring)','Jasani · page 5 · laser engraving',[11.55,8.75,7.35]],['Belmonte - PU & Metal Keychain','Jasani · page 5 · laser engraving',[11.97,9.17,7.77]]]),
+K('k-caps','Promotional Caps','Apparel',['ge','cr'],'285','CAPS','6-panel structured sport cap',162),
+K('k-tees','Round Neck & Polo T-Shirts','Apparel',['ge'],'284','T-SHIRTS','Heat transfer or screen printing',162),
+K('k-polo','Custom Sublimation Polo','Apparel',['ge'],'286','CUSTOM POLO','All-over sublimation, embroidery or heat transfer',163),
+C('c87','Premium 5-Piece Gift Set','Gift sets',['br'],87,[85,84,86,83],[G('ASA promotional gift set range (e.g. ASA 69, ASA 80, ASA 84)')]),
+C('c89','Tumbler, Notebook & Pen Gift Set','Gift sets',['br'],89,[],[G('Steel Bottle, Metal Pen & Black PU Notebook A5 set (500 ml)')]),
+J('j25','Bottle, Notebook & Pen Gift Set','Gift sets',['br'],'25','Lauta','Lauta Set of Stainless Bottle, Notebook and Pen','Colour-matched vacuum bottle, metal pen and A5 notebook; soft touch; gift box',[65.10,53.20,50.05],'debossing and laser engraving'),
+J('j26','Tumbler, Notebook & Pen Value Set','Gift sets',['br','ge'],'26','Koksi','Koksi - Set of Double Walled Tumbler, A5 Notebook and Pen','350ml tumbler, A5 192-page notebook, plastic pen; colour matched',[48.37,37.87,35.42],'digital UV print'),
+J('j16','A5 Notebook & Pen Gift Set','Gift sets',['br'],'16','Borna','Borna - Giftology A5 Hard Cover Notebook and Pen Set','PU cover; 160 ruled pages; gift box',[31.50,26.46,22.96],'branding (technique not stated)'),
+C('c69','Sublimation Lanyard','Event essentials',['ge'],69,[72]),
+C('c74','Button Badges 44mm','Event essentials',['ge','cr'],74),
+KG('kg-ecovix','Magnetic RPET & Bamboo Notebook with Pen','Desk & notebooks',['br'],751,'EcoVix-11640','A5; RPET with bamboo; magnetic closure; bamboo pen; debossing available',11),
+KG('kg-bambeg','Dual-Tone Executive Button Notebook','Desk & notebooks',['br'],823,'BAMBEG-11641','RPET and bamboo; button closure; ribbon bookmark; black or dark blue',12),
+KG('kg-ecovin','Bamboo-Finish PU Notebook','Desk & notebooks',['ge'],889,'Ecovin-11627','A5; bamboo front, textured PU back; 96 ruled pages; pen loop',13),
+KG('kg-hartil','Cork Notebook','Desk & notebooks',['ge','cr'],951,'Hartil-11522','Cork cover; black or blue',14),
+KG('kg-turbiz','Bamboo Wireless Mouse','Desk & notebooks',['br','ge'],2229,'Turbiz-11588','Bamboo top; black or white',39),
+KG('kg-asgra','Steel Tumbler with Bamboo Lid & Base','Drinkware',['br','ge'],1725,'Asgra / Zhú-Gōng','Stainless steel; bamboo lid and base; black or white. Page lists two names; confirm the code',28),
+KG('kg-wooster','Eco Power Bank 10,000mAh','Tech',['ge'],2031,'Wooster-11488 / Bradfor-11487','10,000mAh. Page lists two power banks; confirm which is pictured',35),
+KG('kg-niksai','Round Bamboo Charging Cable Set','Tech',['cr','ge'],2202,'Niksai-11544','Type-A, Type-C, Micro USB and Lightning connectors; Type-C to C cable',38),
+KG('kg-giksai','Square Bamboo Charging Cable Set','Tech',['cr'],2205,'Giksai-11543','Square bamboo case with connector set',38),
+KG('kg-stockel','Bamboo Bluetooth Speaker, Square','Tech',['cr','ge'],2332,'Stockel-11527','Bamboo with transparent top',41),
+KG('kg-whitins','Bamboo Bluetooth Speaker, Round','Tech',['ge'],2335,'Whitins-11526','Bamboo, round',41),
+KG('kg-aura','Juco Canvas Bag with Leather Strap','Bags & sleeves',['br'],2653,'Aura-11531','Jute and canvas; 457 × 370 × 205mm; leather strap',47),
+KG('kg-arder','Recycled Cotton Tote','Bags & sleeves',['ge','cr'],2926,'ARDER-11626','Recycled cotton; black, blue, red, green or white; 250 × 250mm print area',52),
+KG('kg-diarix','Canvas Shopping Bag','Bags & sleeves',['ge'],2929,'Diarix-11350','Listed as jute and canvas',52)];
+const STY={editorial:{n:'MoonTech Editorial',sw:'#F2EADB',d:'Warm cream, deep indigo, serif details and one geometric hero graphic.'},
+creator:{n:'Creator Graphics',sw:'#C9BCF2',d:'Die-cut stickers built from content-making tools: viewfinder, aspect ratios, waveform, playback.'},
+pattern:{n:'MoonTech Pattern',sw:'#3E278D',d:'Repeat pattern of geometric moon phases, finished with a woven wordmark label.'},
+lunar:{n:'Lunar / Orbit',sw:'#1B1730',d:'A full lunar cycle traced along an orbit. The logo stays separate and small.'},
+minimal:{n:'MoonTech Minimal',sw:'#2B2930',d:'Charcoal, black, navy or cream with a tonal, debossed or engraved wordmark.'},
+bold:{n:'Bold Creator',sw:'#151418',d:'Oversized stacked type, outline and solid, with a REC marker.'}};
+const DZ=[
+{k:'stickers',n:'Laptop sticker packs',link:[],pot:['HMPrint','PrintOnline','Merchlist'],v:[
+ {a:'cr',st:'creator',sk:'laptop',t:'Creator sticker pack, on a laptop',line:'Viewfinder, 9:16 frame, waveform, playback bar and wordmark label.'},
+ {a:'cr',st:'bold',sk:'crsheet',t:'Creator sticker sheet',line:'Outline type, aspect-ratio and content stickers on one kiss-cut sheet.'},
+ {a:'br',st:'minimal',sk:'brand',t:'Brand sticker pack',line:'Matte stickers: wordmark, data marks and clean geometry. No slogans.'},
+ {a:'ge',st:'editorial',sk:'gen',t:'Everyday sticker sheet',line:'Wordmark labels, moon phases and geometric stickers for wide distribution.'}]},
+{k:'sleeve',n:'Laptop sleeve',link:['k-porticase','k-slapt'],v:[
+ {a:'cr',st:'creator',b:'#F2EADB',line:'Cream sleeve with content-tool stickers that read on camera.'},
+ {a:'br',st:'minimal',b:'#2B2930',ink:'#3A3840',size:.32,line:'Charcoal felt with a debossed wordmark.'},
+ {a:'ge',st:'pattern',b:'#3E278D',ink:'#FFFFFF',acc:'#F2CC55',line:'Indigo sleeve with the moon-phase pattern and a woven label.'}]},
+{k:'pouch',n:'Tech pouch',link:['k-casey','k-tach','k-acery'],v:[
+ {a:'cr',st:'bold',b:'#151418',ink:'#FFFFFF',acc:'#F3C4DD',copy:'On|Record',line:'Black pouch with oversized type for a mic, cable and card kit.'},
+ {a:'br',st:'minimal',b:'#1B1730',ink:'#2A2548',size:.36,line:'Navy pouch, tonal wordmark, nothing else.'},
+ {a:'ge',st:'editorial',b:'#F2EADB',line:'Cream pouch with the eclipse graphic and serif details.'}]},
+{k:'organiser',n:'Travel organiser',link:['k-pacho','k-bopas','k-casey'],v:[
+ {a:'br',st:'minimal',b:'#2B2930',ink:'#3A3840',size:.4,line:'Zip-around organiser in charcoal with a debossed wordmark.'},
+ {a:'cr',st:'creator',b:'#E6DFFA',acc:'#F2CC55',line:'Lavender organiser with content-tool stickers.'}]},
+{k:'powerbank',n:'Power bank',link:['j03','c03','j02','c01','j04','k-satraa','kg-wooster'],v:[
+ {a:'cr',st:'creator',b:'#C9BCF2',line:'Lavender shell with stickers that match the laptop pack.'},
+ {a:'br',st:'minimal',b:'#151418',ink:'#7E7C86',mode:'engrave',size:.62,line:'Matte black with a laser-engraved wordmark.'},
+ {a:'ge',st:'lunar',b:'#1B1730',line:'Navy shell with the lunar cycle traced on an orbit.'}]},
+{k:'charger',n:'Wireless charger',link:['j19','c06','c07','k-kalua'],v:[
+ {a:'br',st:'minimal',b:'#2B2930',ink:'#3A3840',size:.4,pos:.66,line:'Tonal wordmark below the charging zone.'},
+ {a:'cr',st:'lunar',b:'#1B1730',line:'Lunar cycle around the charging zone.'}]},
+{k:'grip',n:'Phone grip',link:[],pot:['Merchlist','PrintOnline'],v:[
+ {a:'cr',st:'lunar',b:'#1B1730',line:'Moon-phase orbit that shows in mirror shots.'},
+ {a:'br',st:'minimal',b:'#151418',ink:'#34323A',size:.78,line:'Black grip with a tonal wordmark.'},
+ {a:'ge',st:'editorial',b:'#F2EADB',line:'Cream grip with the indigo wordmark.'}]},
+{k:'wallet',n:'Magnetic phone wallet',link:['k-veemag'],v:[
+ {a:'cr',st:'creator',b:'#F2EADB',line:'Cream wallet with a wordmark label; folds into a filming stand.'},
+ {a:'br',st:'minimal',b:'#151418',ink:'#34323A',size:.74,line:'Black PU with a blind-debossed wordmark.'}]},
+{k:'cablekit',n:'Cable kit',link:['c16','kg-niksai','kg-giksai','k-blit'],v:[
+ {a:'cr',st:'creator',b:'#E6DFFA',line:'Lavender card kit with viewfinder stickers.'},
+ {a:'ge',st:'editorial',b:'#F2EADB',line:'Cream card with the eclipse graphic.'}]},
+{k:'tote',n:'Tote bag',link:['c65','j24','j23','kg-arder','kg-diarix','kg-aura'],v:[
+ {a:'cr',st:'bold',shape:'tote2',b:'#F2EADB',ink:'#3E278D',acc:'#D9468B',h:'#3E278D',tab:'#3E278D',copy:'Create.|Post.|Repeat.',line:'Front: small wordmark. Back: outline and solid stacked type.'},
+ {a:'br',st:'minimal',b:'#151418',ink:'#2E2C33',h:'#151418',size:.44,pos:.46,line:'Black canvas, black-on-black wordmark.'},
+ {a:'ge',st:'editorial',shape:'tote2',b:'#F2EADB',h:'#3E278D',tab:'#3E278D',line:'Front: small wordmark. Back: editorial eclipse layout.'},
+ {a:'ge',st:'pattern',b:'#3E278D',ink:'#FFFFFF',acc:'#F2CC55',h:'#1B1730',line:'All-over moon-phase pattern with a woven label.'}]},
+{k:'cap',n:'Cap',link:['k-caps'],v:[
+ {a:'cr',st:'bold',b:'#151418',ink:'#FFFFFF',acc:'#F3C4DD',copy:'On|Record',nowm:1,line:'Black cap with stacked front type.'},
+ {a:'br',st:'minimal',b:'#2B2930',ink:'#3E3C44',size:.78,line:'Tonal embroidered wordmark on charcoal.'},
+ {a:'ge',st:'editorial',b:'#F2EADB',line:'Cream cap with an indigo embroidered wordmark.'}]},
+{k:'tee',n:'T-shirt / oversized tee',link:['k-tees'],note:'Oversized fit to confirm with supplier',v:[
+ {a:'cr',st:'bold',shape:'tee2',b:'#151418',ink:'#FFFFFF',acc:'#F3C4DD',wm:'#FFFFFF',copy:'Creator|Mode',t:'Oversized creator tee',line:'Front: small chest wordmark. Back: oversized type.'},
+ {a:'br',st:'minimal',b:'#151418',ink:'#2E2C33',area:[204,88,48,20],size:.95,line:'Black tee, small tonal chest wordmark.'},
+ {a:'ge',st:'lunar',shape:'tee2',b:'#1B1730',wm:'#FFFFFF',line:'Front: small chest wordmark. Back: lunar cycle.'}]},
+{k:'polo',n:'Polo',link:['k-polo'],v:[
+ {a:'br',st:'minimal',b:'#1B1730',ink:'#2E2852',size:.95,line:'Navy polo, tonal embroidered chest wordmark.'},
+ {a:'ge',st:'editorial',b:'#F7F4EE',line:'White polo with an indigo chest wordmark for team wear.'}]},
+{k:'hoodie',n:'Hoodie',link:[],pot:['Merchlist'],v:[
+ {a:'cr',st:'lunar',b:'#1B1730',line:'Navy hoodie with the lunar cycle.'},
+ {a:'br',st:'minimal',b:'#2B2930',ink:'#3E3C44',size:.5,pos:.3,line:'Charcoal hoodie, small tonal wordmark.'}]},
+{k:'bottle',n:'Bottle',link:['j13','j12','c49','c48','j11','k-flacon','k-yosip'],v:[
+ {a:'cr',st:'creator',b:'#C9BCF2',line:'Lavender bottle with a wordmark label and camera sticker.'},
+ {a:'br',st:'minimal',b:'#151418',ink:'#8A8892',mode:'engrave',size:.78,line:'Matte black with a laser-engraved wordmark.'},
+ {a:'ge',st:'pattern',b:'#3E278D',ink:'#FFFFFF',acc:'#F2CC55',line:'Indigo bottle with the moon-phase pattern.'}]},
+{k:'tumbler',n:'Tumbler',link:['k-sqram','kg-asgra'],chx:[56,57],v:[
+ {a:'cr',st:'bold',b:'#F3C4DD',ink:'#3E278D',acc:'#3E278D',copy:'Create|More',line:'Pink tumbler with stacked type.'},
+ {a:'br',st:'minimal',b:'#F2EADB',ink:'#DDD2BE',size:.6,line:'Cream tumbler with a tonal wordmark.'},
+ {a:'ge',st:'lunar',b:'#1B1730',line:'Navy tumbler with the lunar cycle.'}]},
+{k:'notebook',n:'Notebook',link:['j15','c36','j14','kg-ecovix','kg-bambeg','kg-ecovin','kg-hartil','k-caro'],v:[
+ {a:'br',st:'minimal',b:'#2B2930',ink:'#3A3840',size:.56,pos:.42,line:'Charcoal cover, blind-debossed wordmark.'},
+ {a:'cr',st:'creator',b:'#F2EADB',line:'Cream cover with content-tool stickers.'},
+ {a:'ge',st:'editorial',b:'#F2EADB',line:'Editorial cover: eclipse graphic, rule and serif details.'}]},
+{k:'tag',n:'Luggage tag',link:['k-intag','k-lugtag'],v:[
+ {a:'br',st:'minimal',b:'#151418',ink:'#34323A',size:.66,pos:.55,line:'Black leatherette with a debossed wordmark.'},
+ {a:'cr',st:'creator',b:'#C9BCF2',line:'Lavender tag with viewfinder stickers; easy to spot.'}]},
+{k:'stand',n:'Phone stand',link:['k-veehold','c77'],v:[
+ {a:'cr',st:'creator',b:'#E6DFFA',line:'Lavender stand with a wordmark label below the phone.'},
+ {a:'ge',st:'lunar',b:'#1B1730',line:'Navy stand with the lunar cycle.'}]},
+{k:'laptopstand',n:'Laptop stand',link:[],v:[
+ {a:'br',st:'minimal',b:'#CFCDD5',ink:'#9C9AA4',mode:'engrave',size:.9,line:'Aluminium stand, engraved wordmark on the front edge.'}]},
+{k:'deskmat',n:'Desk mat',link:['k-chuvo'],v:[
+ {a:'br',st:'minimal',b:'#2B2930',ink:'#3A3840',size:.22,line:'Charcoal mat with a small tonal wordmark.'},
+ {a:'cr',st:'lunar',b:'#1B1730',line:'Navy mat with the lunar cycle under the laptop.'},
+ {a:'ge',st:'pattern',b:'#3E278D',ink:'#FFFFFF',acc:'#F2CC55',line:'Moon-phase pattern across the full mat.'}]},
+{k:'giftset',n:'Gift set',link:['c87','j25','j26','c89','j16'],v:[
+ {a:'br',st:'minimal',b:'#151418',ink:'#2E2C33',size:.4,line:'Black rigid box, debossed wordmark on the lid.'},
+ {a:'cr',st:'editorial',b:'#F2EADB',area:[90,146,220,118],line:'Cream box with the editorial eclipse layout.'}]},
+{k:'pack',n:'Packaging',link:[],pot:['HMPrint','PrintOnline'],custom:1,v:[
+ {a:'cr',st:'creator',b:'#E6DFFA',line:'Lavender mailer with content-tool stickers.'},
+ {a:'br',st:'minimal',b:'#151418',ink:'#2E2C33',size:.4,line:'Black mailer with a tonal wordmark.'},
+ {a:'ge',st:'pattern',b:'#3E278D',ink:'#FFFFFF',acc:'#F2CC55',line:'Moon-phase pattern mailer for any item inside.'}]}];
+const SUP=[
+{name:'Chops General Trading',url:'https://chops.ae',best:'Branded tech, drinkware and gift sets',strengths:'Power banks, wireless chargers, cables, travel adapters, speakers, bottles and tumblers, totes, lanyards, gift sets',pricing:'Verified. Price list PL-0011 for MoonTech: 89 items, 50 to 500 pcs, AED excl. 5% VAT, print included, valid until 20 Oct 2026',moq:'Not confirmed. Lowest quoted tier is 50 pcs',lead:'Not confirmed',st:'Verified prices',key:'Chops',quote:'catalogues/chops-price-list-PL-0011.pdf',catNote:'Customised catalogue to be provided'},
+{name:'Jasani',url:'https://www.jasani.ae',best:'Power banks, drinkware, notebooks, totes and gift sets',strengths:'Magnetic power banks, speakers, flasks and bottles, ceramic mugs, notebooks and pens, MagSafe portfolios, recycled cotton totes, gift sets, keychains, Skross adapters',pricing:'Verified. Quotation for MoonTech: 26 products at 25, 50 and 100 pcs, AED excl. VAT. Branding technique stated per product. Validity date not stated',moq:'Not confirmed. Lowest quoted tier is 25 pcs',lead:'Not confirmed',st:'Verified prices',key:'Jasani',quote:'catalogues/jasani-quotation.pdf',catNote:'Customised catalogue to be provided',note:'Billund and Halle pens have no image in the quote, so they appear as options under the Goslar pen.'},
+{name:'Alwaha',cat:'catalogues/catalog-2026-2027.pdf',url:'',best:'Bags, sleeves, pouches, phone and travel accessories, apparel',strengths:'Bottles and tumblers, laptop sleeves and backpacks, tech pouches, cables and chargers, phone wallets and stands, luggage tags, card holders, caps and tees',pricing:'Quote pending. Catalogue has no prices',moq:'Not confirmed',lead:'Not confirmed',st:'Catalogue only',key:KS,note:'Catalogue: CATALOG 2026–2027 (163 pages).'},
+{name:'Krossover Gifts',cat:'catalogues/promotional-gifts-2026.pdf',url:'',best:'Eco notebooks, drinkware, totes and bamboo tech',strengths:'RPET, bamboo and cork notebooks, steel tumblers, cotton and juco bags, bamboo cable sets, speakers and mice, eco power banks',pricing:'Quote pending. Catalogue has no prices',moq:'Not confirmed',lead:'Not confirmed',st:'Catalogue only',key:KGS,note:'Catalogue: Promotional Gifts 2026 (266 pages). Also lists ZYN-11623BK MagSafe power bank with stand, AKIA-11583 and Voidex-11541 charging organisers; their images could not be extracted, so they are not in Browse Merch yet.'},
+{name:'Giftium',url:'https://giftium.ae',best:'Tech merch, gift sets and apparel',strengths:'Power banks, executive portfolios, travel adapters, drinkware, gift sets, polos and T-shirts. Screen print, engraving and UV print offered',pricing:'Quote pending. Website lists products without prices',moq:'Not confirmed',lead:'Not confirmed',st:'Quote pending',key:'Giftium'},
+{name:'Peacock Advertising',url:'',best:'Advertising and branded items',strengths:'Not yet recorded',pricing:'Pricing file not yet added to the library',moq:'Not confirmed',lead:'Not confirmed',st:'File needed',key:'-'},
+{name:'TYDEN',url:'',best:'Not yet recorded',strengths:'Not yet recorded',pricing:'No catalogue or price file in the library yet',moq:'Not confirmed',lead:'Not confirmed',st:'File needed',key:'-'},
+{name:'QAS Gifts',url:'https://qasgifts.ae',best:'Corporate merch',strengths:'Corporate gifting range',pricing:'Quote pending',moq:'Not confirmed',lead:'Not confirmed',st:'Quote pending',key:'-'},
+{name:'HMPrint',url:'https://hmprintdxb.com',best:'Printing and branding',strengths:'Print production. Potential source for stickers and packaging, not confirmed',pricing:'Quote pending',moq:'Not confirmed',lead:'Not confirmed',st:'Quote pending',key:'HMPrint'},
+{name:'Merchlist',url:'https://themerchlist.com',best:'Custom merchandise',strengths:'Branded merchandise. Potential source for stickers, grips and hoodies, not confirmed',pricing:'Quote pending',moq:'Not confirmed',lead:'Not confirmed',st:'Quote pending',key:'Merchlist'},
+{name:'PrintOnline',url:'https://www.printonline.ae',best:'Online printing and branded items',strengths:'Print and branded merchandise ordered online. Potential source for stickers, grips and packaging, not confirmed',pricing:'Quote pending',moq:'Not confirmed',lead:'Not confirmed',st:'Quote pending',key:'PrintOnline'},
+{name:'TFS / Fab Store',url:'',best:'Not yet recorded',strengths:'Not yet recorded',pricing:'Quote pending',moq:'Not confirmed',lead:'Not confirmed',st:'Quote pending',key:'-'},
+{name:'Elzit',url:'',best:'Not yet recorded',strengths:'Not yet recorded',pricing:'Quote pending',moq:'Not confirmed',lead:'Not confirmed',st:'Quote pending',key:'-'}];
+const STC={'Verified prices':['#E3F3EA','#1E7A4E'],'Quote pending':['#FAF1F7','#7E3F70'],'Catalogue only':['#F1ECFA','#3E278D'],'File needed':['#F4EEE2','#6E5520']};
+const FS="'DM Serif Display',Georgia,serif",FC="'Caveat',cursive",FN="Figtree,Arial,sans-serif";
+const CO={cream:'#F2EADB',ind:'#3E278D',navy:'#1B1730',lav:'#C9BCF2',lavL:'#E6DFFA',pink:'#F3C4DD',hot:'#EE6FA4',yel:'#F2CC55',char:'#2B2930',blk:'#151418',wht:'#FFFFFF'};
+let WM='',U='a';
+const rr=(x,y,w,h,r)=>`M${x+r},${y}H${x+w-r}A${r},${r} 0 0 1 ${x+w},${y+r}V${y+h-r}A${r},${r} 0 0 1 ${x+w-r},${y+h}H${x+r}A${r},${r} 0 0 1 ${x},${y+h-r}V${y+r}A${r},${r} 0 0 1 ${x+r},${y}Z`;
+const ci=(cx,cy,r)=>`M${cx-r},${cy}a${r},${r} 0 1,0 ${2*r},0a${r},${r} 0 1,0 ${-2*r},0Z`;
+const pth=(d,f,x)=>`<path d="${d}" fill="${f}"${x||''}/>`;
+const GT=(t,s)=>`<g transform="${t}">${s}</g>`;
+const R=(r,cx,cy,s)=>r?GT(`rotate(${r} ${cx} ${cy})`,s):s;
+const spD=(cx,cy,r)=>{const k=r*.18;return `M${cx},${cy-r}Q${cx+k},${cy-k} ${cx+r},${cy}Q${cx+k},${cy+k} ${cx},${cy+r}Q${cx-k},${cy+k} ${cx-r},${cy}Q${cx-k},${cy-k} ${cx},${cy-r}Z`;};
+const sp=(cx,cy,r,c)=>pth(spD(cx,cy,r),c);
+const tx=(x,y,s,c,t,o)=>{o=o||{};return `<text x="${x}" y="${y}" font-family="${o.f==='c'?FC:o.f==='s'?FS:FN}" font-size="${s}" font-weight="${o.w||(o.f?400:800)}" fill="${c}" text-anchor="${o.a||'middle'}"${o.ls!=null?` letter-spacing="${o.ls}"`:''}${o.r?` transform="rotate(${o.r} ${x} ${y})"`:''}>${t}</text>`;};
+const wmk=(x,cy,w,c,a)=>{if(!WM)return '';const h=w*96/566.3,x0=a==='start'?x:x-w/2;return `<svg x="${x0}" y="${cy-h/2}" width="${w}" height="${h}" viewBox="0 105 566.3 96" fill="${c}">${WM}</svg>`;};
+const leaf=(x0,y0,ang,len,wd,c,dr)=>{dr=dr||0;const a=ang*Math.PI/180,ex=x0+Math.cos(a)*len,ey=y0+Math.sin(a)*len+dr*len,mx=(x0+ex)/2,my=(y0+ey)/2-dr*len*.5,nx=-Math.sin(a)*wd,ny=Math.cos(a)*wd;return pth(`M${x0},${y0}Q${mx+nx},${my+ny} ${ex},${ey}Q${mx-nx},${my-ny} ${x0},${y0}Z`,c);};
+const palm=(x,y,h,c)=>{const t0=x+h*.12,ty=y-h;let s=pth(`M${x-h*.04},${y}Q${x+h*.03},${y-h*.5} ${t0-h*.022},${ty}L${t0+h*.022},${ty}Q${x+h*.09},${y-h*.5} ${x+h*.04},${y}Z`,c);
+ [[-172,.5],[-146,.52],[-118,.4],[-64,.42],[-36,.52],[-8,.5],[150,.34],[30,.34]].forEach(([a,l])=>{s+=leaf(t0,ty,a,h*l,h*.075,c,.28);});return s;};
+const frond=(x,y,len,ang,c)=>{const a=ang*Math.PI/180,n=13,P=[];for(let i=0;i<=n;i++){const t=i/n,b=Math.sin(t*Math.PI)*len*.1;P.push([x+Math.cos(a)*len*t-Math.sin(a)*b,y+Math.sin(a)*len*t+Math.cos(a)*b]);}
+ let s=`<path d="M${P.map(p=>p[0].toFixed(1)+','+p[1].toFixed(1)).join('L')}" stroke="${c}" stroke-width="${(len*.02).toFixed(1)}" fill="none" stroke-linecap="round"/>`;
+ for(let i=1;i<n;i++){const t=i/n,L=len*.42*Math.sin(Math.PI*Math.min(.95,t*1.05+.05))*(1-t*.3);for(const sd of[-1,1])s+=leaf(P[i][0],P[i][1],ang+sd*52,L,L*.1,c,0);}return s;};
+const bld=(x,y,w,h,c1,c2,cw)=>{let s='';[[0,.36,.58,c1],[.24,.32,.86,c2],[.5,.3,1,c1],[.74,.26,.66,c2]].forEach(([fx,fw,fh,col],i)=>{const bx=x+fx*w,bw=fw*w,bh=fh*h,by=y-bh;
+  let d=`M${bx},${y}V${by}`;const n=Math.max(3,Math.round(bw/(h*.08))),st=bw/n;for(let k=0;k<n;k++)d+=`L${bx+k*st+st*.5},${by-h*.035}L${bx+(k+1)*st},${by}`;d+=`V${y}Z`;s+=pth(d,col);
+  const tw=h*.05;for(let r=0;r<2;r++)for(let k=0;k<2;k++){const wx=bx+bw*(.3+k*.4),wy=by+bh*(.2+r*.22);s+=pth(`M${wx-tw/2},${wy+tw}L${wx},${wy}L${wx+tw/2},${wy+tw}Z`,cw);}
+  if(i===2)s+=pth(`M${bx+bw*.35},${y}V${y-bh*.2}A${bw*.15},${bw*.15} 0 0 1 ${bx+bw*.65},${y-bh*.2}V${y}Z`,cw);});return s;};
+const strip=(x,y,h,wd,c,bg)=>{let s=`<rect x="${x}" y="${y}" width="${wd}" height="${h}" fill="${c}"/>`;for(let yy=y+wd*.2;yy<y+h;yy+=wd*1.5)s+=pth(`M${x+wd/2},${yy}L${x+wd*.84},${yy+wd*.7}L${x+wd/2},${yy+wd*1.4}L${x+wd*.16},${yy+wd*.7}Z`,bg);return s;};
+const camI=(cx,cy,s,c,bg)=>pth(rr(cx-s*.5,cy-s*.3,s,s*.62,s*.12),c)+pth(rr(cx-s*.2,cy-s*.42,s*.3,s*.16,s*.05),c)+`<circle cx="${cx}" cy="${cy+s*.01}" r="${s*.2}" fill="${bg}"/><circle cx="${cx}" cy="${cy+s*.01}" r="${s*.11}" fill="${c}"/><circle cx="${cx+s*.33}" cy="${cy-s*.17}" r="${s*.045}" fill="${bg}"/>`;
+const triI=(cx,cy,s,c)=>pth(`M${cx-s*.32},${cy-s*.42}L${cx+s*.46},${cy}L${cx-s*.32},${cy+s*.42}Z`,c);
+const bubD=(x,y,w,h,r,t0)=>`M${x+r},${y}H${x+w-r}A${r},${r} 0 0 1 ${x+w},${y+r}V${y+h-r}A${r},${r} 0 0 1 ${x+w-r},${y+h}H${t0+w*.2}L${t0-w*.06},${y+h+h*.34}L${t0},${y+h}H${x+r}A${r},${r} 0 0 1 ${x},${y+h-r}V${y+r}A${r},${r} 0 0 1 ${x+r},${y}Z`;
+const phase=(cx,cy,r,p,c,bg,sw)=>{const ring=`<circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="${c}" stroke-width="${sw||Math.max(.8,r*.12)}"/>`;if(p<=0)return ring;return `<circle cx="${cx}" cy="${cy}" r="${r}" fill="${c}"/>`+(p<1?`<circle cx="${cx+p*2*r}" cy="${cy}" r="${r*.98}" fill="${bg}"/>`:'')+ring;};
+const pstrip=(x,cy,w,n,c,bg)=>{const g=w/n,r=g*.34;let s='';const P=[0,.25,.5,.75,1,.75,.5,.25,0];for(let i=0;i<n;i++)s+=phase(x+g*(i+.5),cy,r,P[Math.round(i*(P.length-1)/(n-1))],c,bg);return s;};
+const corners=(x,y,w,h,L,c,sw)=>`<path d="M${x},${y+L}V${y}H${x+L}M${x+w-L},${y}H${x+w}V${y+L}M${x+w},${y+h-L}V${y+h}H${x+w-L}M${x+L},${y+h}H${x}V${y+h-L}" fill="none" stroke="${c}" stroke-width="${sw}" stroke-linecap="round"/>`;
+const label=(x,y,w,bg,ink)=>{const h=w*.3;return pth(rr(x,y,w,h,1.5),bg)+`<path d="${rr(x+2,y+2,w-4,h-4,1)}" fill="none" stroke="${ink}" stroke-opacity=".35" stroke-width=".7" stroke-dasharray="1.5 1.5"/>`+wmk(x+w/2,y+h/2,w*.74,ink);};
+const STK={
+ wmL:(cx,cy,s,v)=>({d:rr(cx-1.3*s,cy-.36*s,2.6*s,.72*s,.06*s),f:v==='cream'?CO.cream:v==='ind'?CO.ind:CO.blk,i:`<path d="${rr(cx-1.2*s,cy-.27*s,2.4*s,.54*s,.04*s)}" fill="none" stroke="${v==='cream'?CO.ind:CO.wht}" stroke-opacity=".4" stroke-width="${.025*s}" stroke-dasharray="${.06*s} ${.05*s}"/>`+wmk(cx,cy,1.95*s,v==='cream'?CO.ind:CO.wht)}),
+ frame:(cx,cy,s)=>({d:rr(cx-.9*s,cy-.62*s,1.8*s,1.24*s,.14*s),f:CO.blk,i:corners(cx-.7*s,cy-.44*s,1.4*s,.88*s,.2*s,CO.wht,.05*s)+`<circle cx="${cx-.48*s}" cy="${cy-.24*s}" r="${.07*s}" fill="${CO.hot}"/>`+tx(cx-.36*s,cy-.18*s,.17*s,CO.wht,'REC',{a:'start',ls:.3})+tx(cx+.56*s,cy+.32*s,.15*s,CO.lav,'00:12',{a:'end',w:600})+`<circle cx="${cx}" cy="${cy}" r="${.12*s}" fill="none" stroke="${CO.wht}" stroke-width="${.03*s}"/>`}),
+ ratio:(cx,cy,s,t)=>({d:rr(cx-.5*s,cy-.74*s,s,1.48*s,.12*s),f:CO.cream,i:`<path d="${rr(cx-.38*s,cy-.62*s,.76*s,1.24*s,.06*s)}" fill="none" stroke="${CO.ind}" stroke-width="${.03*s}"/>`+tx(cx,cy+.13*s,.36*s,CO.ind,t||'9:16',{f:'s'})}),
+ wave:(cx,cy,s)=>({d:rr(cx-1.1*s,cy-.34*s,2.2*s,.68*s,.34*s),f:CO.ind,i:[.3,.55,.8,.45,.95,.6,.35,.7,.5,.25,.4].map((k,i)=>pth(rr(cx-.8*s+i*.16*s,cy-k*.22*s,.07*s,k*.44*s,.035*s),i===4?CO.yel:CO.lav)).join('')}),
+ play:(cx,cy,s)=>({d:rr(cx-1.2*s,cy-.3*s,2.4*s,.6*s,.3*s),f:CO.wht,i:triI(cx-.88*s,cy,.3*s,CO.ind)+`<path d="M${cx-.6*s},${cy}H${cx+.95*s}" stroke="${CO.lav}" stroke-width="${.07*s}" stroke-linecap="round"/><path d="M${cx-.6*s},${cy}H${cx+.3*s}" stroke="${CO.ind}" stroke-width="${.07*s}" stroke-linecap="round"/><circle cx="${cx+.3*s}" cy="${cy}" r="${.11*s}" fill="${CO.hot}"/>`}),
+ modeS:(cx,cy,s)=>({d:rr(cx-.62*s,cy-.95*s,1.24*s,1.9*s,.16*s),f:CO.ind,i:corners(cx-.48*s,cy-.8*s,.96*s,1.6*s,.16*s,CO.lav,.03*s)+tx(cx,cy-.02*s,.34*s,CO.wht,'Creator',{f:'s'})+tx(cx,cy+.34*s,.34*s,CO.yel,'Mode',{f:'s'})}),
+ phase:(cx,cy,s)=>({d:rr(cx-1.2*s,cy-.3*s,2.4*s,.6*s,.3*s),f:CO.navy,i:pstrip(cx-1*s,cy,2*s,5,CO.lavL,CO.navy)}),
+ camL:(cx,cy,s)=>({d:ci(cx,cy,.58*s),f:CO.yel,i:`<path d="${rr(cx-.32*s,cy-.18*s,.64*s,.42*s,.08*s)}" fill="none" stroke="${CO.ind}" stroke-width="${.06*s}"/><path d="M${cx-.12*s},${cy-.18*s}L${cx-.06*s},${cy-.28*s}H${cx+.1*s}L${cx+.16*s},${cy-.18*s}" fill="none" stroke="${CO.ind}" stroke-width="${.06*s}" stroke-linejoin="round"/><circle cx="${cx}" cy="${cy+.03*s}" r="${.12*s}" fill="none" stroke="${CO.ind}" stroke-width="${.06*s}"/>`}),
+ onrec:(cx,cy,s)=>({d:rr(cx-1.1*s,cy-.36*s,2.2*s,.72*s,.36*s),f:CO.cream,i:`<circle cx="${cx-.78*s}" cy="${cy}" r="${.1*s}" fill="${CO.hot}"/>`+tx(cx+.1*s,cy+.13*s,.36*s,CO.ind,'On Record',{f:'s'})}),
+ type:(cx,cy,s)=>({d:rr(cx-1.1*s,cy-.8*s,2.2*s,1.6*s,.12*s),f:CO.ind,i:['CREATE.','POST.','REPEAT.'].map((l,i)=>`<text x="${cx}" y="${cy-.3*s+i*.44*s}" font-family="${FN}" font-size="${.4*s}" font-weight="900" text-anchor="middle" letter-spacing="-.3" ${i===1?`fill="${CO.yel}"`:`fill="none" stroke="${CO.wht}" stroke-width="${.022*s}"`}>${l}</text>`).join('')}),
+ ecl:(cx,cy,s)=>({d:ci(cx,cy,.6*s),f:CO.cream,i:`<circle cx="${cx+.1*s}" cy="${cy+.08*s}" r="${.34*s}" fill="${CO.ind}"/><circle cx="${cx-.16*s}" cy="${cy-.1*s}" r="${.22*s}" fill="${CO.lav}"/><circle cx="${cx+.3*s}" cy="${cy-.3*s}" r="${.06*s}" fill="${CO.yel}"/>`}),
+ dots:(cx,cy,s)=>{let i='';for(let r=0;r<3;r++)for(let k=0;k<5;k++)i+=phase(cx-.72*s+k*.36*s,cy-.3*s+r*.3*s,.1*s,[0,.5,1][(r+k)%3],CO.lavL,CO.ind,.02*s);return {d:rr(cx-1*s,cy-.55*s,2*s,1.1*s,.14*s),f:CO.ind,i};},
+ bwm:(cx,cy,s)=>({d:rr(cx-1.4*s,cy-.42*s,2.8*s,.84*s,.08*s),f:CO.blk,i:wmk(cx,cy,2.1*s,CO.wht)}),
+ bcr:(cx,cy,s)=>({d:rr(cx-1.2*s,cy-.42*s,2.4*s,.84*s,.08*s),f:CO.cream,i:wmk(cx,cy,1.8*s,CO.ind)}),
+ chart:(cx,cy,s)=>{const P=[[-.55,.25],[-.25,.05],[0,.14],[.25,-.14],[.5,-.3]].map(([a,b])=>[cx+a*s,cy+b*s]);return {d:rr(cx-.8*s,cy-.55*s,1.6*s,1.1*s,.12*s),f:CO.ind,i:`<path d="M${cx-.6*s},${cy+.36*s}H${cx+.6*s}" stroke="${CO.lav}" stroke-width="${.03*s}"/><path d="M${P.join('L')}" fill="none" stroke="${CO.wht}" stroke-width="${.05*s}" stroke-linejoin="round"/>`+P.map((p,i)=>`<circle cx="${p[0]}" cy="${p[1]}" r="${.055*s}" fill="${i===4?CO.yel:CO.wht}"/>`).join('')};},
+ node:(cx,cy,s)=>{const P=[[-.28,-.18],[.22,-.28],[.3,.16],[-.1,.3],[-.32,.14]].map(([a,b])=>[cx+a*s,cy+b*s]);return {d:ci(cx,cy,.58*s),f:CO.lav,i:[[0,1],[1,2],[2,3],[3,4],[4,0],[0,2],[1,3]].map(([a,b])=>`<path d="M${P[a]}L${P[b]}" stroke="${CO.ind}" stroke-width="${s*.035}"/>`).join('')+P.map((p,i)=>`<circle cx="${p[0]}" cy="${p[1]}" r="${s*(i===2?.08:.06)}" fill="${i===2?CO.hot:CO.ind}"/>`).join('')};},
+ bph:(cx,cy,s)=>({d:rr(cx-.5*s,cy-.5*s,s,s,.1*s),f:CO.cream,i:phase(cx,cy,.26*s,.5,CO.ind,CO.cream,.03*s)}),
+ bars:(cx,cy,s)=>({d:rr(cx-.75*s,cy-.32*s,1.5*s,.64*s,.32*s),f:CO.blk,i:[0,1,2,3,4].map(i=>pth(rr(cx-.42*s+i*.19*s,cy+.16*s-(i+1)*.06*s,.1*s,(i+1)*.06*s,.02*s),i===4?CO.yel:CO.lav)).join('')}),
+ grid:(cx,cy,s)=>{let i='';for(let r=0;r<4;r++)for(let k=0;k<4;k++)i+=`<circle cx="${cx-.33*s+k*.22*s}" cy="${cy-.33*s+r*.22*s}" r="${.045*s}" fill="${r===1&&k===2?CO.yel:CO.lav}"/>`;return {d:rr(cx-.55*s,cy-.55*s,1.1*s,1.1*s,.1*s),f:CO.blk,i};}
+};
+const stick=(t,cx,cy,s,r,arg)=>{const k=STK[t](cx,cy,s,arg);return R(r,cx,cy,pth(k.d,k.f,` stroke="#FFFFFF" stroke-width="${Math.max(2.5,s*.14)}" stroke-linejoin="round" filter="url(#${U}sh)"`)+k.i);};
+const DIRS={
+ front:(a,c)=>wmk(a[0]+a[2]/2,a[1]+a[3]/2,a[2],c.wm||c.ink),
+ editorial(a,c){const [x,y,w,h]=a,m=Math.min(w,h);if(m<90)return wmk(x+w/2,y+h/2,w*.64,c.ink)+(m>50?`<circle cx="${x+w*.9}" cy="${y+h*.22}" r="${m*.05}" fill="${CO.yel}"/>`:'');
+  const lx=x+w*.1,port=h>w*.8;let s='';
+  s+=`<circle cx="${x+w*.74}" cy="${y+h*(port?.8:.86)}" r="${m*(port?.5:.56)}" fill="${c.ink}"/><circle cx="${x+w*(port?.5:.56)}" cy="${y+h*(port?.66:.7)}" r="${m*.26}" fill="${CO.lav}"/><circle cx="${x+w*(port?.3:.4)}" cy="${y+h*(port?.62:.62)}" r="${m*.035}" fill="${CO.yel}"/>`;
+  s+=wmk(lx,y+h*.17,w*(port?.56:.4),c.ink,'start')+`<path d="M${lx},${y+h*.27}H${x+w*.9}" stroke="${c.ink}" stroke-width="${Math.max(.8,m*.005)}"/>`+tx(lx,y+h*.27+m*.07,m*.05,c.ink,'Vol. 01',{f:'s',a:'start'})+tx(x+w*.9,y+h*.27+m*.07,m*.05,c.ink,'2026',{f:'s',a:'end'});return s;},
+ creator(a,c){const [x,y,w,h]=a,m=Math.min(w,h);const L=m>=150?[['wmL',.34,.16,-5],['modeS',.8,.4,6],['frame',.26,.48,-7],['wave',.56,.76,-3],['ratio',.14,.84,8,'9:16'],['camL',.86,.12,10]]:m>=95?[['wmL',.42,.22,-5],['frame',.28,.64,-8],['camL',.74,.66,8],['ratio',.84,.24,10,'9:16']]:[['wmL',.5,.36,-5],['camL',.72,.76,10]];
+  const s0=m>=150?m*.15:m>=95?m*.17:Math.min(m*.2,w*.3);return L.map(([t,fx,fy,r,arg])=>stick(t,x+w*fx,y+h*fy,s0,r,arg)).join('');},
+ pattern(a,c){const [x,y,w,h]=a,g=Math.max(22,Math.min(w,h)/4.2);let s='',r=0;const P=[0,.25,.5,.75,1];for(let yy=y+g*.5;yy<y+h+g;yy+=g){let k=0;for(let xx=x+g*.5;xx<x+w+g;xx+=g){const i=(r*2+k)%P.length;s+=phase(xx,yy,g*.3,P[i],(r+k)%7===3?c.acc:c.ink,c.body,g*.035);k++;}r++;}
+  const lw=Math.min(w*.34,70);return s+label(x+w-lw-w*.06,y+h-lw*.3-h*.06,lw,c.ink,c.body);},
+ lunar(a,c){const [x,y,w,h]=a,m=Math.min(w,h),cx=x+w/2,cy=y+h*.62;let s='';const rx=w*.42,ry=h*.36;
+  s+=`<ellipse cx="${cx}" cy="${cy}" rx="${rx}" ry="${ry}" fill="none" stroke="${CO.lav}" stroke-opacity=".5" stroke-width="${Math.max(1,m*.006)}" stroke-dasharray="${m*.012} ${m*.02}"/>`;
+  const n=7;for(let i=0;i<n;i++){const t=Math.PI*(1+i/(n-1)),px=cx+Math.cos(t)*rx,py=cy+Math.sin(t)*ry,k=1-Math.abs(i-3)/3;s+=phase(px,py,m*(.045+.035*k),[0,.25,.5,1,.5,.25,0][i],i===3?CO.yel:CO.lavL,c.body,Math.max(.8,m*.008));}
+  [[.12,.18],[.86,.14],[.3,.9],[.78,.86],[.55,.08]].forEach(([fx,fy])=>s+=`<circle cx="${x+w*fx}" cy="${y+h*fy}" r="${Math.max(.8,m*.008)}" fill="${CO.wht}"/>`);
+  return s+wmk(cx,cy+(m>=90?h*.04:0),w*(m>=90?.36:.5),CO.wht);},
+ minimal(a,c){const [x,y,w,h]=a,cx=x+w/2,cy=y+h*(c.pos||.5),z=Math.min(w*(c.size||.44),170);if(c.mode==='engrave')return wmk(cx,cy,z,c.ink);
+  return wmk(cx+.6,cy+.8,z,'#000000" fill-opacity=".5')+wmk(cx-.5,cy-.6,z,'#FFFFFF" fill-opacity=".14')+wmk(cx,cy,z,c.ink);},
+ bold(a,c){const [x,y,w,h]=a,cx=x+w/2,L=(c.copy||'Create|More').split('|'),mx=Math.max(...L.map(l=>l.length)),fs=Math.min(w*.94/(mx*.66),h*(c.nowm?.8:.62)/L.length),lh=fs*.92;
+  const y0=y+h*(c.nowm?.5:.44)-(L.length*lh)/2+fs*.78;let s='';
+  L.forEach((l,i)=>{s+=`<text x="${cx}" y="${y0+i*lh}" font-family="${FN}" font-size="${fs}" font-weight="900" text-anchor="middle" letter-spacing="${-fs*.03}" ${i%2?`fill="${c.acc}"`:`fill="none" stroke="${c.ink}" stroke-width="${Math.max(1,fs*.035)}"`}>${l.toUpperCase()}</text>`;});
+  s+=`<circle cx="${x+w*.1}" cy="${y0-fs*.95}" r="${fs*.12}" fill="${CO.hot}"/>`+tx(x+w*.1+fs*.22,y0-fs*.86,fs*.26,c.ink,'REC',{a:'start',w:800,ls:1});
+  if(!c.nowm)s+=wmk(cx,y+h*.9,Math.min(w*.34,110),c.wm||c.ink);return s;}
+};
+const PHONE=`${pth(rr(140,26,120,248,28),'#2E2C35')}${pth(rr(152,38,48,52,14),'#24222A')}<circle cx="166" cy="54" r="8" fill="#141318"/><circle cx="186" cy="74" r="8" fill="#141318"/>`;
+const TEEP='M130 60L170 46Q200 70 230 46L270 60L312 102L282 128L268 116L268 258L132 258L132 116L118 128L88 102Z';
+const two=(dx,k)=>`translate(${200+dx-200*k},${150-150*k}) scale(${k})`;
+const toteP=(c,t,side)=>({t,side,u:`<path d="M146,108C146,30 192,30 192,108M208,108C208,30 254,30 254,108" fill="none" stroke="${c.h||c.body}" stroke-width="10"/><path d="M146,108C146,30 192,30 192,108M208,108C208,30 254,30 254,108" fill="none" stroke="rgba(0,0,0,.16)" stroke-width="10"/>`,
+ d:'M108,104H292L300,282H100Z',a:side==='front'?[160,236,80,22]:[112,116,176,160],sh:[200,288,112],tex:1,o:`<path d="M108,113H292" stroke="rgba(0,0,0,.16)" stroke-width="1.5" stroke-dasharray="2 3"/>`+(c.tab?pth(rr(297,186,9,34,2),c.tab):'')});
+const teeP=(c,t,side)=>({t,side,d:TEEP,a:side==='front'?[206,90,42,16]:side==='back'?[138,84,124,150]:[146,96,108,128],sh:[200,264,112],tex:1,o:side==='back'?`<path d="M172,48Q200,58 228,48" fill="none" stroke="rgba(0,0,0,.28)" stroke-width="3"/>`:`<path d="M170,46Q200,70 230,46" fill="none" stroke="rgba(0,0,0,.3)" stroke-width="3"/>`});
+const SH={
+ sleeve:c=>[{d:rr(70,62,260,176,20),a:[70,62,260,176],sh:[200,250,140],tex:1,o:`<path d="M86,76H314" stroke="rgba(0,0,0,.28)" stroke-width="2.5" stroke-dasharray="1 3"/>`+pth(rr(300,70,20,12,4),'rgba(0,0,0,.35)')+`<path d="${rr(70,62,260,176,20)}" fill="none" stroke="rgba(0,0,0,.18)" stroke-width="3"/>`}],
+ pouch:c=>[{u:`<path d="M316,124C356,124 356,194 316,194" fill="none" stroke="#151418" stroke-width="9" stroke-linecap="round"/>`,d:rr(78,88,244,148,46),a:[78,88,244,148],sh:[200,246,130],tex:1,o:`<path d="M100,106Q200,92 300,106" fill="none" stroke="rgba(0,0,0,.35)" stroke-width="4" stroke-dasharray="3 3"/>`+pth(rr(286,98,12,26,4),c.acc||CO.hot)}],
+ organiser:c=>[{d:rr(98,54,204,194,24),a:[98,54,204,194],sh:[200,256,110],tex:1,o:`<path d="${rr(108,64,184,174,17)}" fill="none" stroke="rgba(0,0,0,.28)" stroke-width="2.5" stroke-dasharray="3 3"/>`+pth(rr(286,60,10,24,3),CO.yel)}],
+ powerbank:c=>[{d:rr(130,36,140,228,28),a:[130,36,140,228],sh:[200,270,90],o:pth(rr(186,250,28,5,2.5),'rgba(0,0,0,.4)')+`<path d="${rr(130,36,140,228,28)}" fill="none" stroke="rgba(255,255,255,.14)" stroke-width="2"/>`}],
+ charger:c=>[{u:`<ellipse cx="200" cy="246" rx="116" ry="14" fill="rgba(0,0,0,.2)"/>`,d:ci(200,146,104),a:[96,42,208,208],sh:[200,258,110],o:`<circle cx="200" cy="146" r="103" fill="none" stroke="rgba(255,255,255,.16)" stroke-width="3"/><circle cx="200" cy="232" r="3" fill="${CO.hot}"/>`}],
+ grip:c=>[{u:PHONE,d:ci(200,192,50),a:[150,142,100,100],sh:[200,284,70],o:`<circle cx="200" cy="192" r="50" fill="none" stroke="rgba(0,0,0,.25)" stroke-width="3"/><circle cx="200" cy="192" r="41" fill="none" stroke="rgba(255,255,255,.12)" stroke-width="1.5"/>`}],
+ wallet:c=>[{u:PHONE+pth(rr(164,116,72,34,5),CO.lav)+pth(rr(172,108,56,34,5),CO.cream),d:rr(154,126,92,120,14),a:[154,126,92,120],sh:[200,284,70],tex:1,o:pth('M184,126Q200,142 216,126Z','rgba(0,0,0,.3)')}],
+ cablekit:c=>[{d:rr(92,68,216,140,14),a:[170,68,138,140],sh:[200,224,120],o:[0,1,2].map(i=>pth(rr(108,88+i*36,54,22,11),'rgba(0,0,0,.34)')+pth(rr(150,94+i*36,8,10,2),'rgba(255,255,255,.55)')).join('')}],
+ tote:c=>[toteP(c,'',null)],
+ tote2:c=>[toteP(c,two(-98,.72),'front'),toteP(c,two(98,.72),'back')],
+ tee:c=>[teeP(c,'',null)],
+ tee2:c=>[teeP(c,two(-98,.76),'front'),teeP(c,two(98,.76),'back')],
+ polo:c=>[{d:TEEP,a:[208,96,40,16],sh:[200,264,112],tex:1,o:`<path d="M170,46L184,76L200,62L216,76L230,46Q200,58 170,46Z" fill="${c.body}"/><path d="M170,46L184,76L200,62L216,76L230,46Q200,58 170,46Z" fill="rgba(0,0,0,.14)"/><path d="M200,62V104" stroke="rgba(0,0,0,.22)" stroke-width="2"/><circle cx="200" cy="80" r="2.4" fill="rgba(0,0,0,.3)"/><circle cx="200" cy="94" r="2.4" fill="rgba(0,0,0,.3)"/>`}],
+ hoodie:c=>[{u:`<path d="M154,60Q200,2 246,60Q200,40 154,60Z" fill="${c.body}"/><path d="M154,60Q200,2 246,60Q200,40 154,60Z" fill="rgba(0,0,0,.28)"/>`,d:'M128,72L160,54Q200,86 240,54L272,72L320,206L294,216L268,146L268,262L132,262L132,146L106,216L80,206Z',a:[150,96,100,96],sh:[200,270,110],tex:1,o:`<path d="M158,208H242L254,248H146Z" fill="none" stroke="rgba(0,0,0,.22)" stroke-width="2"/><path d="M188,66V108M212,66V108" stroke="rgba(255,255,255,.55)" stroke-width="2.5" stroke-linecap="round"/>`}],
+ cap:c=>[{d:'M106,206C106,116 156,72 200,72C244,72 294,116 294,206Z',a:[150,100,100,80],sh:[200,252,132],tex:1,o:`<path d="M155,90Q170,150 162,206M245,90Q230,150 238,206" stroke="rgba(0,0,0,.13)" fill="none" stroke-width="2"/><circle cx="200" cy="74" r="6" fill="rgba(0,0,0,.3)"/><path d="M84,204Q200,178 316,204Q332,234 200,244Q68,234 84,204Z" fill="${c.body}"/><path d="M84,204Q200,178 316,204Q332,234 200,244Q68,234 84,204Z" fill="rgba(0,0,0,.22)"/>`}],
+ bottle:c=>[{u:pth(rr(166,28,68,50,12),'#1B1A20')+pth(rr(176,22,48,12,5),'#2A2830'),d:rr(158,72,84,198,32),a:[158,96,84,160],sh:[200,276,60],o:pth(rr(168,92,7,160,3.5),'rgba(255,255,255,.16)')}],
+ tumbler:c=>[{u:`<path d="${rr(221,12,9,72,4)}" fill="#D2C7EE" transform="rotate(12 226 48)"/>`,d:'M140,86H260L247,266Q200,276 153,266Z',a:[146,104,108,150],sh:[200,278,70],o:pth(rr(132,66,136,26,9),'#1B1A20')+pth(rr(150,96,6,150,3),'rgba(255,255,255,.14)')}],
+ notebook:c=>[{d:rr(118,34,172,230,10),a:[134,34,140,230],sh:[204,272,100],tex:1,o:pth(rr(118,34,18,230,8),'rgba(0,0,0,.18)')+pth('M266,34H274V264H266Z','rgba(0,0,0,.4)')+pth('M240,264H250V286L245,280L240,286Z',CO.hot)}],
+ tag:(c,bg)=>[{d:rr(150,72,112,180,18),a:[150,116,112,136],sh:[206,262,70],tex:1,o:`<circle cx="206" cy="98" r="10" fill="${bg}" stroke="rgba(0,0,0,.35)" stroke-width="3"/><path d="M206,90C206,52 248,30 276,20" stroke="#1B1A20" stroke-width="6" fill="none" stroke-linecap="round"/>`}],
+ stand:c=>[{u:pth(rr(120,244,160,16,8),'#1B1A20'),d:'M138,250L172,92H228L262,250Z',a:[138,180,124,70],sh:[200,268,92],o:pth(rr(166,36,68,142,12),'#2E2C35')+pth(rr(171,41,58,132,9),'#4A4656')}],
+ laptopstand:c=>[{u:pth(rr(104,40,192,98,8),'#D9D8DE')+pth(rr(92,132,216,12,5),'#A6A4AD'),d:'M126,250H274L292,146H108Z',a:[150,216,100,26],sh:[200,256,120],o:`<path d="M108,146H292" stroke="rgba(255,255,255,.6)" stroke-width="2"/><path d="M126,250H274" stroke="rgba(0,0,0,.2)" stroke-width="3"/>`}],
+ deskmat:c=>[{u:pth(rr(250,128,60,40,10),'#E3E1E7'),d:rr(30,96,340,150,18),a:[30,96,340,150],sh:[200,250,170],tex:1,o:`<path d="${rr(35,101,330,140,14)}" fill="none" stroke="rgba(255,255,255,.18)" stroke-width="1.5" stroke-dasharray="2 3"/>`+pth(rr(286,170,34,50,17),'#E3E1E7')}],
+ giftset:c=>[{d:rr(80,84,240,62,8)+rr(90,142,220,124,6),a:[80,84,240,62],sh:[200,274,128],o:pth('M90,146H310V154H90Z','rgba(0,0,0,.26)')}],
+ pack:c=>[{d:'M86,124H306V258H86Z',a:[86,124,220,134],sh:[220,264,140],tex:1,o:`<path d="M86,124L136,78H356L306,124Z" fill="${c.body}"/><path d="M86,124L136,78H356L306,124Z" fill="rgba(255,255,255,.22)"/><path d="M306,124L356,78V212L306,258Z" fill="${c.body}"/><path d="M306,124L356,78V212L306,258Z" fill="rgba(0,0,0,.28)"/>`}]};
+const STS={
+ laptop:()=>`<ellipse cx="200" cy="258" rx="170" ry="9" fill="rgba(27,23,48,.2)" filter="url(#${U}bl)"/>`+pth(rr(40,238,320,14,7),'#A9A7B1')+pth(rr(64,30,272,212,14),`url(#${U}al)`)+`<path d="${rr(64,30,272,212,14)}" fill="none" stroke="rgba(0,0,0,.12)" stroke-width="1.5"/>`+stick('wmL',146,76,28,-5)+stick('modeS',290,96,26,7)+stick('frame',118,158,28,-8)+stick('wave',214,130,24,-3)+stick('ratio',236,198,22,9,'9:16')+stick('play',160,214,22,4)+stick('camL',198,72,24,10)+stick('phase',300,200,18,-6),
+ crsheet:()=>`<ellipse cx="200" cy="286" rx="110" ry="6" fill="rgba(27,23,48,.18)" filter="url(#${U}bl)"/>`+pth(rr(92,16,216,268,8),CO.cream)+stick('type',152,80,30,-4)+stick('onrec',258,62,22,5)+stick('ratio',266,124,22,-6,'4:5')+stick('frame',140,166,26,6)+stick('wmL',226,176,24,-3,'ind')+stick('wave',150,238,22,-5)+stick('camL',238,236,24,8)+stick('phase',276,270,14,0),
+ brand:()=>`<ellipse cx="200" cy="284" rx="132" ry="7" fill="rgba(27,23,48,.2)" filter="url(#${U}bl)"/>`+pth(rr(70,22,260,256,12),CO.char)+stick('bwm',160,76,30,0)+stick('bph',278,76,30,0)+stick('chart',134,156,30,0)+stick('node',212,156,30,0)+stick('grid',282,156,26,0)+stick('bcr',168,232,28,0)+stick('bars',272,232,26,0),
+ gen:()=>`<ellipse cx="200" cy="286" rx="110" ry="6" fill="rgba(27,23,48,.16)" filter="url(#${U}bl)"/>`+pth(rr(92,16,216,268,8),'#FBF8F3')+stick('wmL',168,74,30,-4,'ind')+stick('ecl',272,74,26,8)+stick('dots',150,156,28,-5)+stick('phase',248,152,22,4)+stick('wmL',158,234,24,3,'cream')+stick('ratio',258,230,22,-6,'1:1')};
+function build(k,v,key){U='m'+key.replace(/[^a-z0-9]/gi,'');const bg={cr:['#EFE9F8','#E1D8F1'],br:['#EDEBEF','#DAD6DE'],ge:['#F6EFE3','#E8DECD']}[v.a];
+ const c={body:v.b||CO.cream,ink:v.ink||CO.ind,acc:v.acc||CO.hot,acc2:v.acc2,copy:v.copy,mode:v.mode,size:v.size,pos:v.pos,strip:v.strip,h:v.h,tab:v.tab,wm:v.wm,nowm:v.nowm};
+ let body='';
+ if(k==='stickers')body=STS[v.sk]();
+ else{const parts=SH[v.shape||k](c,bg[0]);parts.forEach((p,i)=>{const id=U+'c'+i,ar=v.area||p.a,dir=p.side==='front'?DIRS.front:DIRS[v.st];
+   let g=`<ellipse cx="${p.sh[0]}" cy="${p.sh[1]}" rx="${p.sh[2]}" ry="${Math.max(5,p.sh[2]*.07)}" fill="rgba(27,23,48,.2)" filter="url(#${U}bl)"/>`+(p.u||'')+`<clipPath id="${id}"><path d="${p.d}"/></clipPath>`+pth(p.d,c.body)+`<g clip-path="url(#${id})">${dir(ar,c)}${pth(p.d,`url(#${U}lt)`)}${p.tex?pth(p.d,'#000',` filter="url(#${U}tx)"`):''}</g>`+(p.o||'');
+   body+=p.t?GT(p.t,g):g;
+   if(p.side)body+=tx(p.side==='front'?102:298,284,10,'#6B6580',p.side==='front'?'FRONT':'BACK',{w:700,ls:2});});}
+ const wall=`<path d="M250,0H330L210,300H130Z" fill="#FFFFFF" opacity=".22" filter="url(#${U}bl)"/>`;
+ return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300" width="100%" height="100%" preserveAspectRatio="xMidYMid slice" style="display:block"><defs><linearGradient id="${U}bg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${bg[0]}"/><stop offset="1" stop-color="${bg[1]}"/></linearGradient><linearGradient id="${U}lt" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".16"/><stop offset=".45" stop-color="#fff" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".2"/></linearGradient><linearGradient id="${U}al" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#E2E1E7"/><stop offset="1" stop-color="#BAB8C2"/></linearGradient><filter id="${U}sh" x="-20%" y="-20%" width="140%" height="140%"><feDropShadow dx="0" dy="1.5" stdDeviation="1.4" flood-color="#1B1730" flood-opacity=".28"/></filter><filter id="${U}bl" x="-20%" y="-50%" width="140%" height="200%"><feGaussianBlur stdDeviation="3"/></filter><filter id="${U}tx" x="0" y="0" width="100%" height="100%"><feTurbulence type="fractalNoise" baseFrequency="1.1" numOctaves="2" seed="4"/><feColorMatrix values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .16 0 0 0 0"/><feComposite in2="SourceGraphic" operator="in"/></filter></defs><rect width="400" height="300" fill="url(#${U}bg)"/><rect y="226" width="400" height="74" fill="rgba(27,23,48,.04)"/>${wall}${body}</svg>`;}
+const IMG=n=>(window.__resources||{})['img_'+n.replace(/\W/g,'_')]||'supplier-img/'+n;
+const CATS2=['All products','Tech','Bags & Travel','Drinkware','Apparel','Stationery','Desk & Lifestyle','Stickers & Accessories','Gift Sets & Packaging'];
+const FAM=[
+{id:'magpb',n:'MagSafe Power Bank',cat:'Tech',m:['c03','j03','j02'],dz:['powerbank'],kw:'power bank powerbank magnetic wireless battery'},
+{id:'cabpb',n:'Power Bank with Built-in Cables',cat:'Tech',m:['j04','k-satraa'],dz:['powerbank'],kw:'power bank powerbank magsafe wireless battery'},
+{id:'cardpb',n:'Card Holder Power Bank',cat:'Tech',m:['c01'],dz:['powerbank'],kw:'power bank powerbank wallet'},
+{id:'ecopb',n:'Eco Power Bank',cat:'Tech',m:['kg-wooster'],dz:['powerbank'],kw:'power bank powerbank cork wheat'},
+{id:'stand3',n:'3-in-1 Wireless Charging Stand',cat:'Tech',m:['c06','j19','k-kalua'],dz:['charger'],kw:'wireless charger magfold foldable'},
+{id:'tray',n:'Wireless Charging Desk Station',cat:'Tech',m:['c07','c10'],dz:['charger'],kw:'wireless charger tray desk'},
+{id:'cablekit',n:'Travel Cable Kit',cat:'Tech',m:['c16','kg-niksai','kg-giksai','k-blit'],dz:['cablekit'],kw:'cable charging adapter connector'},
+{id:'lucable',n:'Light-up Logo Charging Cable',cat:'Tech',m:['c19','k-mukree'],dz:[],kw:'cable charging'},
+{id:'retract',n:'Retractable Charging Cable',cat:'Tech',m:['k-ecocord'],dz:[],kw:'cable charging'},
+{id:'speaker',n:'Bluetooth Speaker',cat:'Tech',m:['c32','j09','j10','k-perdo','kg-stockel','kg-whitins'],dz:[],kw:'audio wireless speaker'},
+{id:'head',n:'Wireless Headphones',cat:'Tech',m:['k-vish'],dz:[],kw:'audio noise cancelling'},
+{id:'itag',n:'Bluetooth Key Finder',cat:'Tech',m:['k-itag'],dz:[],kw:'tracker tag'},
+{id:'wallet',n:'Magnetic Phone Wallet',cat:'Tech',m:['k-veemag'],dz:['wallet'],kw:'phone magsafe card holder stand'},
+{id:'pstand',n:'Phone Stand & Mount',cat:'Tech',m:['k-veehold','k-andash','c77'],dz:['stand'],kw:'phone holder mount'},
+{id:'sleeve',n:'Laptop Sleeve',cat:'Bags & Travel',m:['k-porticase','k-slapt'],dz:['sleeve'],kw:'laptop case bag'},
+{id:'tablet',n:'Tablet Sleeve',cat:'Bags & Travel',m:['k-tabshell'],dz:[],kw:'ipad tablet case'},
+{id:'backpack',n:'Laptop Backpack',cat:'Bags & Travel',m:['k-extender'],dz:[],kw:'bag laptop travel'},
+{id:'pouch',n:'Tech Pouch & Organiser',cat:'Bags & Travel',m:['k-tach','k-acery','k-casey'],dz:['pouch','organiser'],kw:'pouch organizer cable bag'},
+{id:'hardcase',n:'Hard-shell Gear Case',cat:'Bags & Travel',m:['k-diyfo'],dz:[],kw:'case foam camera'},
+{id:'tote',n:'Cotton Tote Bag',cat:'Bags & Travel',m:['c65','j24','j23','kg-arder','kg-diarix'],dz:['tote'],kw:'tote bag shopping canvas'},
+{id:'juco',n:'Juco Bag with Leather Strap',cat:'Bags & Travel',m:['kg-aura'],dz:[],kw:'bag jute tote'},
+{id:'adapter',n:'Travel Adapter',cat:'Bags & Travel',m:['c23','c25','j27','k-yager'],dz:[],kw:'adapter plug charger travel'},
+{id:'passport',n:'Passport Case',cat:'Bags & Travel',m:['k-pacho','k-bopas'],dz:['organiser'],kw:'passport travel wallet'},
+{id:'tag',n:'Luggage Tag',cat:'Bags & Travel',m:['k-intag','k-lugtag'],dz:['tag'],kw:'luggage tag travel'},
+{id:'card',n:'Card Holder',cat:'Bags & Travel',m:['k-pushion','k-rfid','k-credent'],dz:[],kw:'card wallet rfid business'},
+{id:'bottle',n:'Insulated Steel Bottle',cat:'Drinkware',m:['c49','c48','j12','j13','j11','k-flacon','k-yosip'],dz:['bottle'],kw:'bottle water flask'},
+{id:'tumbler',n:'Steel Tumbler',cat:'Drinkware',m:['k-sqram','kg-asgra'],chx:[56,57],dz:['tumbler'],kw:'tumbler cup coffee'},
+{id:'mug',n:'Ceramic Mug',cat:'Drinkware',m:['j21','j20','j22'],dz:[],kw:'mug cup coffee'},
+{id:'tee',n:'T-shirt',cat:'Apparel',m:['k-tees'],dz:['tee'],kw:'tshirt t-shirt tee shirt oversized'},
+{id:'polo',n:'Polo Shirt',cat:'Apparel',m:['k-polo'],dz:['polo'],kw:'polo shirt'},
+{id:'cap',n:'Cap',cat:'Apparel',m:['k-caps'],dz:['cap'],kw:'cap hat'},
+{id:'hoodie',n:'Hoodie',cat:'Apparel',m:[],pot:['Merchlist'],dz:['hoodie'],kw:'hoodie sweatshirt'},
+{id:'notebook',n:'A5 Notebook',cat:'Stationery',m:['j15','c36','j14','kg-ecovix','kg-bambeg','kg-ecovin','kg-hartil','k-caro'],dz:['notebook'],kw:'notebook journal'},
+{id:'portfolio',n:'Portfolio & Organiser',cat:'Stationery',m:['j18','j17','k-magknote','k-cardano'],dz:[],kw:'portfolio organizer folder wireless'},
+{id:'pen',n:'Metal Pen',cat:'Stationery',m:['j07'],dz:[],kw:'pen'},
+{id:'deskmat',n:'Desk Mat with Wireless Charging',cat:'Desk & Lifestyle',m:['k-chuvo'],dz:['deskmat'],kw:'desk mat mousepad mouse pad'},
+{id:'mouse',n:'Bamboo Wireless Mouse',cat:'Desk & Lifestyle',m:['kg-turbiz'],dz:[],kw:'mouse desk'},
+{id:'lapstand',n:'Laptop Stand',cat:'Desk & Lifestyle',m:[],dz:['laptopstand'],kw:'laptop stand desk'},
+{id:'stickers',n:'Laptop Sticker Pack',cat:'Stickers & Accessories',m:[],pot:['HMPrint','PrintOnline','Merchlist'],dz:['stickers'],kw:'sticker stickers laptop'},
+{id:'grip',n:'Phone Grip',cat:'Stickers & Accessories',m:[],pot:['Merchlist','PrintOnline'],dz:['grip'],kw:'phone grip popsocket'},
+{id:'keychain',n:'Keychain',cat:'Stickers & Accessories',m:['j05'],dz:[],kw:'keychain keyring'},
+{id:'lanyard',n:'Lanyard',cat:'Stickers & Accessories',m:['c69'],dz:[],kw:'lanyard badge event'},
+{id:'badge',n:'Button Badges',cat:'Stickers & Accessories',m:['c74'],dz:[],kw:'badge pin button event'},
+{id:'gsbottle',n:'Bottle, Notebook & Pen Gift Set',cat:'Gift Sets & Packaging',m:['c89','j25','j26'],dz:['giftset'],kw:'gift set box tumbler'},
+{id:'gsstat',n:'Stationery Gift Set',cat:'Gift Sets & Packaging',m:['c87','j16'],dz:['giftset'],kw:'gift set box notebook pen'},
+{id:'pack',n:'Branded Packaging',cat:'Gift Sets & Packaging',m:[],pot:['HMPrint','PrintOnline'],custom:1,dz:['pack'],kw:'packaging box mailer'}];
+const SUPOF=k=>SUP.find(s=>s.key===k)||SUP.find(s=>s.name===k)||{};
+const money=n=>'AED '+n.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
+const AUDT={cr:'Creator',br:'Brand',ge:'General'};
+const tiersOf=qt=>qt?Object.keys(qt).map(Number).filter(n=>qt[n]!=null).sort((a,b)=>a-b):[];
+const FD=FAM.map(f=>{const V=[],seen={};
+  f.m.forEach(id=>{const p=P.find(x=>x.id===id);if(!p)return;const brand=p.inc?p.inc.replace(/^product with /,'').replace(/, as quoted\.$/,''):'';
+    V.push({vid:p.id,s:p.s,name:p.s==='Chops'&&CH[p.ch]?CH[p.ch][0]:p.s==='Jasani'?p.full:p.n,ref:p.s==='Chops'?'Chops PL-0011 · item '+p.ch:p.code,spec:p.spec,img:IMG(p.img),fit:p.fit,qt:p.qt,doc:p.doc,brand,pot:false});
+    p.alts.forEach((a,i)=>V.push({vid:p.id+'~a'+i,s:p.s,name:a.name,ref:a.ref.replace(/^PL-0011/,'Chops PL-0011 ·'),spec:'Separate product on the same '+(p.s==='Chops'?'price list':'quote')+'. No separate photo supplied.',img:null,qt:a.qt,doc:p.doc,brand,pot:false}));
+    p.sim.forEach(r=>{const k=r.s+r.ref;if(seen[k])return;seen[k]=1;V.push({vid:p.id+'~s'+V.length,s:r.s,name:r.ref,ref:'Website listing',spec:'Similar product; same specification not confirmed',img:null,qt:null,doc:r.src,brand:'',pot:true});});});
+  (f.chx||[]).forEach(n=>{if(CH[n])V.push({vid:'ch'+n,s:'Chops',name:CH[n][0],ref:'Chops PL-0011 · item '+n,spec:'Production: with print',img:null,qt:{50:CH[n][1][0],100:CH[n][1][1],200:CH[n][1][2],500:CH[n][1][3]},doc:'Chops price list PL-0011 for MoonTech (6 Oct 2026, valid until 20 Oct 2026)',brand:'logo print',pot:false});});
+  (f.pot||[]).forEach(s=>V.push({vid:'pot-'+f.id+'-'+s,s,name:'Potential source for '+f.n.toLowerCase(),ref:'No product listing supplied',spec:'Not confirmed. Request a quote and sample.',img:null,qt:null,doc:'Supplier website',brand:'',pot:true}));
+  V.forEach(v=>{v.tiers=tiersOf(v.qt);v.lo=v.tiers.length?Math.min(...v.tiers.map(t=>v.qt[t])):null;});
+  const conf=[...new Set(V.filter(v=>!v.pot).map(v=>v.s))],potS=[...new Set(V.filter(v=>v.pot).map(v=>v.s))].filter(s=>!conf.includes(s));
+  const los=V.filter(v=>v.lo!=null).map(v=>v.lo),from=los.length?Math.min(...los):null;
+  const aud=[...new Set(f.m.flatMap(id=>(P.find(x=>x.id===id)||{a:[]}).a).concat(f.dz.flatMap(k=>((DZ.find(d=>d.k===k)||{v:[]}).v).map(v=>v.a))))];
+  const imgV=V.find(v=>v.img);
+  const text=[f.n,f.cat,f.kw,...V.map(v=>v.s+' '+v.name+' '+v.ref+' '+v.spec)].join(' ').toLowerCase();
+  return {...f,V,conf,potS,from,quoted:from!=null,aud,imgV,text};});
+// Paste the Google Apps Script web app URL (ending in /exec) here to enable Save to Google Sheet.
+const GOOGLE_SHEETS_ENDPOINT='';
+const REFS=[
+{id:'core-1',core:1,n:'Editorial MoonTech',d:'Cream, indigo and editorial type with a premium feel.',best:['tote','sleeve','notebook','pack'],aud:['General']},
+{id:'core-2',core:1,n:'Creator Culture',d:'Bilingual sticker graphics with content and camera motifs.',best:['stickers','tee','grip','bottle'],aud:['Creator']},
+{id:'core-3',core:1,n:'MoonTech Pattern',d:'A brand repeat of stars, orbits and diamonds, simple to print at scale.',best:['tote','pouch','sleeve','pack'],aud:['General']},
+{id:'core-4',core:1,n:'Digital / Tech',d:'Data lines, nodes and terminal type for an AI-led feel.',best:['magpb','stand3','sleeve','pouch'],aud:['Brand','General']},
+{id:'core-5',core:1,n:'Premium Minimal',d:'Charcoal, cream and navy with a small or debossed logo.',best:['notebook','sleeve','pouch','bottle'],aud:['Brand']},
+{id:'core-6',core:1,n:'Bold Graphic',d:'Oversized type and strong colour blocks, front and back.',best:['tee','cap','tote','tumbler'],aud:['Creator','General']},
+{id:'link-in-bio',n:'Link in Bio',d:'Digital-culture script type with cursor and interface stickers.',best:['tee','stickers','bottle'],aud:['Creator']},
+{id:'contemporary-regional',n:'Contemporary Regional',d:'Modern regional geometry with Arabic and English type.',best:['tote','notebook','pouch','pack'],aud:['General','Brand']},
+{id:'sticker-culture',n:'Sticker Culture',d:'Camera, REC, headphone and Arabic lettering stickers.',best:['stickers','grip','bottle'],aud:['Creator']},
+{id:'type-in-motion',n:'Type in Motion',d:'Oversized slanted English and Arabic type across front and back.',best:['tee','bottle','tote'],aud:['Creator','General']},
+{id:'off-camera',n:'Off-Camera',d:'Contact-sheet photography, halftone and film edges.',best:['tee','tote','stickers'],aud:['Creator']},
+{id:'connected-objects',n:'Connected Objects',d:'Soft 3D cable forms tied into loops.',best:['sleeve','pouch','cablekit','stickers'],aud:['General']},
+{id:'the-ripple',n:'The Ripple',d:'Ripple lines spreading out from a speech bubble.',best:['tee','cap','pouch'],aud:['General']},
+{id:'brand-x-creator',n:'Brand × Creator',d:'Illustrated brand and creator hand-off in editorial type.',best:['tee','tote','stickers'],aud:['Creator','Brand']},
+{id:'recommendation-edit',n:'The Recommendation Edit',d:'Illustrated creators with their product picks.',best:['tote','sleeve','stickers'],aud:['Creator']},
+{id:'unboxed',n:'Unboxed',d:'Unboxing illustration with expressive product stickers.',best:['stickers','tee','sleeve','pack'],aud:['Creator']},
+{id:'creator-editorial',n:'Creator Editorial',d:'Editorial serif, contact frames and hand-drawn marks.',best:['tee','tote','sleeve'],aud:['Creator']},
+{id:'found-your-match',n:'Found Your Match',d:'Stripes that cross and overlap into new patterns.',best:['tote','sleeve','notebook'],aud:['General']},
+{id:'creative-signal',n:'Creative Signal',d:'A brush stroke that turns into data bars.',best:['notebook','sleeve','pack'],aud:['Brand']},
+{id:'perfect-pairing',n:'Perfect Pairing',d:'Engraved product and creator pairs linked by one line.',best:['notebook','sleeve','pack'],aud:['Brand','Creator']},
+{id:'digital-ai',n:'Digital / AI Graphics',d:'Pixel grids and selection frames.',best:['sleeve','pouch','magpb'],aud:['General','Brand']},
+{id:'premium-moontech',n:'Premium MoonTech',d:'Debossed wordmark on leather, navy and cream.',best:['notebook','sleeve','pouch'],aud:['Brand']},
+{id:'bold-geometric',n:'Bold Geometric',d:'Large interlocking blocks in purple, blue and pink.',best:['tee','tote','cap'],aud:['General']}];
+const RIMG=r=>(window.__resources||{})['ref_'+r.id.replace(/\W/g,'_')]||'design-refs/'+r.id+'.jpg';
+const CART_KEY='mt-merch-cart-v1',META_KEY='mt-merch-selection-meta-v1';
+const esc=s=>String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+const csvq=s=>{s=s==null?'':String(s);return /[",\n]/.test(s)?'"'+s.replace(/"/g,'""')+'"':s;};
+const today=()=>{const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');};
+const IE=(src,alt,fit,lazy)=>src?React.createElement('img',{src,alt,loading:lazy?'lazy':undefined,style:{width:'100%',height:'100%',display:'block',objectFit:fit||'cover'}}):null;
+const SEL=(value,on,opts,big)=>React.createElement('select',{key:String(value),defaultValue:String(value),onChange:on,style:{border:'none',outline:'none',background:'transparent',fontSize:big?14:13,fontWeight:big?800:700,color:'#1B1730',padding:'8px 6px',cursor:'pointer',fontFamily:'inherit'}},opts.map(o=>React.createElement('option',{key:String(o.v),value:String(o.v)},o.l)));
+class Component extends DCLogic {
+  state={styleF:null,zoom:null,modal:null,meta:{name:'',purpose:'',by:'',notes:''},mErr:'',saving:false,selId:'',view:'shop',fid:null,q:'',cat:'All products',fSup:'All',fSt:'All',fPr:'All',sort:'Featured',vsel:{},qsel:{},main:{},cart:[],toast:'',gProd:'All',gSty:'all',wm:''};
+  componentDidMount(){fetch((window.__resources||{}).wordmark||'./wordmark.svg.txt').then(r=>r.text()).then(t=>{this.cache={};this.setState({wm:t.replace(/^\s*<svg[^>]*>/,'').replace(/<\/svg>\s*$/,'')});}).catch(()=>{});
+    try{const c=JSON.parse(localStorage.getItem(CART_KEY)||'[]');if(Array.isArray(c))this.setState({cart:c});const m=JSON.parse(localStorage.getItem(META_KEY)||'null');if(m)this.setState({meta:{...this.state.meta,...m}});}catch(e){}}
+  setMeta(k,val){const meta={...this.state.meta,[k]:val};this.setState({meta,mErr:''});try{localStorage.setItem(META_KEY,JSON.stringify(meta));}catch(e){}}
+  rows(){return this.state.cart.map(c=>{const f=FD.find(x=>x.id===c.fid);if(!f)return null;const v=f.V.find(x=>x.vid===c.vid);const unit=v&&v.qt&&v.qt[c.qty]!=null?v.qt[c.qty]:null;
+    const st=unit!=null?'Quoted':v&&v.pot?'Potential source':v&&v.tiers.length?'Not priced at '+c.qty+' pcs':'Quote pending';
+    return {c,f,v,unit,sub:unit!=null?Math.round(unit*c.qty*100)/100:null,st,vat:unit!=null?'Excl. 5% VAT':'n/a',img:v&&v.img?v.img:f.imgV?f.imgV.img:null};}).filter(Boolean);}
+  totals(rows){const sub=rows.reduce((a,r)=>a+(r.sub||0),0);return {sub,vat:sub*.05,total:sub*1.05,pend:rows.filter(r=>r.unit==null).length};}
+  payload(){const rows=this.rows(),t=this.totals(rows),m=this.state.meta;return {selectionName:m.name.trim(),purpose:m.purpose.trim(),createdBy:m.by.trim(),date:new Date().toISOString(),notes:m.notes.trim(),currency:'AED',confirmedTotalExclVat:Math.round(t.sub*100)/100,vat:Math.round(t.vat*100)/100,confirmedTotal:Math.round(t.total*100)/100,quotePendingCount:t.pend,
+    items:rows.map(r=>({productId:r.f.id,productName:r.f.n,supplier:r.v?r.v.s:'',supplierProduct:r.v?r.v.name:'',supplierReference:r.v?r.v.ref:'',quantity:r.c.qty,unitPrice:r.unit,subtotal:r.sub,currency:'AED',vatStatus:r.vat,priceStatus:r.st}))};}
+  saveSheet(){const m=this.state.meta;if(!m.name.trim()){this.setState({mErr:'Add a selection name to save.'});return;}
+    if(!GOOGLE_SHEETS_ENDPOINT){this.setState({mErr:'Google Sheets is not connected yet. Paste the Apps Script web app URL into GOOGLE_SHEETS_ENDPOINT in this file, then try again. Use Download CSV in the meantime.'});return;}
+    this.setState({saving:true,mErr:''});
+    fetch(GOOGLE_SHEETS_ENDPOINT,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(this.payload())}).then(r=>r.text()).then(t=>{let j={};try{j=JSON.parse(t);}catch(e){}if(j.ok===false||j.error)throw new Error(j.error||'Save failed');this.setState({saving:false,selId:j.selectionId||j.id||'(no ID returned)',modal:'done'});})
+      .catch(e=>this.setState({saving:false,mErr:'Could not save: '+(e.message||'network error')+'. Check the endpoint URL and that the script is deployed for anyone with the link.'}));}
+  downloadCsv(){const rows=this.rows(),t=this.totals(rows),m=this.state.meta;const H=['Product','Supplier','Supplier Product','Supplier Reference','Quantity','Unit Price','Subtotal','Currency','VAT Status','Price Status'];
+    const L=[H].concat(rows.map(r=>[r.f.n,r.v?r.v.s:'',r.v?r.v.name:'',r.v?r.v.ref:'',r.c.qty,r.unit!=null?r.unit.toFixed(2):'',r.sub!=null?r.sub.toFixed(2):'','AED',r.vat,r.st]));
+    L.push([]);L.push(['Confirmed subtotal (excl. VAT)','','','','','',t.sub.toFixed(2),'AED']);L.push(['VAT 5%','','','','','',t.vat.toFixed(2),'AED']);L.push(['Confirmed estimated total (incl. VAT)','','','','','',t.total.toFixed(2),'AED']);L.push(['Items awaiting quote',t.pend]);
+    if(m.name)L.push(['Selection name',m.name]);if(m.purpose)L.push(['Purpose / event',m.purpose]);if(m.by)L.push(['Created by',m.by]);L.push(['Date',today()]);
+    const csv='\uFEFF'+L.map(r=>r.map(csvq).join(',')).join('\r\n');const url=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));const a=document.createElement('a');a.href=url;a.download='MoonTech_Merch_Selection_'+today()+'.csv';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),4000);}
+  printSummary(){const rows=this.rows(),t=this.totals(rows),m=this.state.meta;const abs=u=>{try{return new URL(u,document.baseURI).href;}catch(e){return u;}};
+    const wm=this.state.wm?`<svg viewBox="0 105 566.3 96" fill="#3E278D" style="width:150px;height:auto;display:block">${this.state.wm}</svg>`:'<strong>MoonTech</strong>';
+    const meta=[['Selection',m.name||'Untitled selection'],['Purpose / event',m.purpose||'—'],['Date',new Date().toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'})],['Created by',m.by||'—']];
+    const html=`<!DOCTYPE html><html><head><meta charset="utf-8"><title>MoonTech Merch Selection</title><style>@page{size:A4;margin:16mm}*{box-sizing:border-box}body{margin:0;font-family:Figtree,Arial,sans-serif;color:#1B1730;font-size:11pt}h1{font-family:Georgia,serif;font-weight:400;font-size:26pt;margin:14px 0 4px}.meta{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:14px 0 18px;padding:12px 14px;border:1px solid #E7E1F3;border-radius:10px}.meta div{font-size:9pt;color:#6B6580}.meta b{display:block;font-size:11pt;color:#1B1730;margin-top:2px}table{width:100%;border-collapse:collapse}th{font-size:8.5pt;text-transform:uppercase;letter-spacing:.05em;color:#6B6580;text-align:left;padding:7px 6px;border-bottom:1.5px solid #1B1730}td{padding:8px 6px;border-bottom:1px solid #E7E1F3;vertical-align:middle}tr{page-break-inside:avoid}.r{text-align:right;white-space:nowrap}.img{width:46px;height:46px;border-radius:6px;object-fit:cover;background:#F1ECFA;display:block}.sm{font-size:9pt;color:#6B6580}.pend{color:#7E3F70;font-weight:700}.tot{margin-top:16px;margin-left:auto;width:300px}.tot div{display:flex;justify-content:space-between;padding:4px 0}.tot .big{border-top:1.5px solid #1B1730;margin-top:4px;padding-top:8px;font-size:14pt;font-weight:800}.note{margin-top:18px;font-size:9pt;color:#6B6580}</style></head><body>${wm}<h1>MoonTech Merch Selection</h1><div class="meta">${meta.map(([k,v])=>`<div>${esc(k)}<b>${esc(v)}</b></div>`).join('')}</div>
+      <table><thead><tr><th></th><th>Product</th><th>Supplier</th><th class="r">Qty</th><th class="r">Unit price</th><th class="r">Subtotal</th><th>Price status</th></tr></thead><tbody>${rows.map(r=>`<tr><td>${r.img?`<img class="img" src="${esc(abs(r.img))}">`:'<div class="img"></div>'}</td><td><b>${esc(r.f.n)}</b><div class="sm">${esc(r.v?r.v.name:'')}</div></td><td>${esc(r.v?r.v.s:'')}<div class="sm">${esc(r.v?r.v.ref:'')}</div></td><td class="r">${r.c.qty}</td><td class="r">${r.unit!=null?money(r.unit):'—'}</td><td class="r">${r.sub!=null?money(r.sub):'<span class="pend">Pending</span>'}</td><td class="${r.unit!=null?'':'pend'}">${esc(r.st)}</td></tr>`).join('')}</tbody></table>
+      <div class="tot"><div><span>Confirmed subtotal (excl. VAT)</span><span>${money(t.sub)}</span></div><div><span>VAT 5%</span><span>${money(t.vat)}</span></div><div class="big"><span>Confirmed estimated total</span><span>${money(t.total)}</span></div><div><span>Items awaiting quote</span><span>${t.pend}</span></div></div>${m.notes?`<div class="note"><b>Notes:</b> ${esc(m.notes)}</div>`:''}<div class="note">Estimate based on supplier quotes at the selected quantities. Quote-pending items are not included in the total. MOQ and lead times are not confirmed. This is a planning shortlist, not a purchase order.</div></body></html>`;
+    const fr=document.createElement('iframe');fr.style.cssText='position:fixed;right:0;bottom:0;width:0;height:0;border:0;';document.body.appendChild(fr);const d=fr.contentDocument;d.open();d.write(html);d.close();
+    const go=()=>{try{fr.contentWindow.focus();fr.contentWindow.print();}catch(e){}setTimeout(()=>fr.remove(),60000);};const ims=[...d.images];let n=ims.filter(i=>!i.complete).length;if(!n)setTimeout(go,150);else ims.forEach(i=>{if(!i.complete){const done=()=>{if(--n===0)setTimeout(go,100);};i.onload=done;i.onerror=done;}});
+    this.setState({modal:null});}
+  saveCart(cart){this.setState({cart});try{localStorage.setItem(CART_KEY,JSON.stringify(cart));}catch(e){}}
+  go(view,x){this.setState({view,...(x||{})});try{window.scrollTo(0,0);}catch(e){}}
+  artEl(k,v){WM=this.state.wm;const key=k+v.a+v.st+(v.sk||'')+(v.shape||'')+(v.b||'')+(WM?1:0);this.cache=this.cache||{};if(!this.cache[key])this.cache[key]=build(k,v,key);return React.createElement('div',{style:{width:'100%',height:'100%'},dangerouslySetInnerHTML:{__html:this.cache[key]}});}
+  dzOf(f){return f.dz.flatMap(k=>{const g=DZ.find(d=>d.k===k);return g?g.v.map((v,i)=>({k,v,i})):[];});}
+  defV(f){const q=f.V.find(v=>v.lo!=null);return (q||f.V.find(v=>!v.pot)||f.V[0]||{}).vid;}
+  defQ(v){if(!v||!v.tiers||!v.tiers.length)return 100;return v.tiers.includes(100)?100:v.tiers[0];}
+  addToCart(f,v,qty){const cart=this.state.cart.slice();const i=cart.findIndex(c=>c.fid===f.id&&c.vid===(v?v.vid:null));if(i>=0)cart[i]={...cart[i],qty};else cart.push({id:Date.now(),fid:f.id,vid:v?v.vid:null,qty});this.saveCart(cart);
+    this.setState({toast:f.n+(v?' · '+v.s:'')+' · '+qty+' pcs added'});clearTimeout(this.tt);this.tt=setTimeout(()=>this.setState({toast:''}),3200);}
+  priceTxt(v){return v.lo!=null?'From '+money(v.lo):v.pot?'Potential source':'Quote pending';}
+  renderVals(){const S=this.state;WM=S.wm;
+    const navI=[['shop','Shop'],['gallery','Design gallery'],['sup','Suppliers']];
+    const nav=navI.map(([k,l])=>{const on=S.view===k||(k==='shop'&&S.view==='product');return {label:l,go:()=>this.go(k),bg:on?'#F1ECFA':'transparent',fg:on?'#3E278D':'#1B1730'};});
+    const vals={nav,goShop:()=>this.go('shop'),goCart:()=>this.go('cart'),cartCount:S.cart.length,cartBg:S.view==='cart'?'#1B1730':'#3E278D',
+      hasWm:!!S.wm,wordmarkEl:S.wm?React.createElement('img',{src:'data:image/svg+xml;charset=utf-8,'+encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 105 566.3 96" fill="#3E278D">${S.wm}</svg>`),alt:'MoonTech',style:{width:124,height:'auto',display:'block'}}):null,
+      isShop:S.view==='shop',isProduct:S.view==='product',isGallery:S.view==='gallery',isSup:S.view==='sup',isCart:S.view==='cart',
+      hasToast:!!S.toast,toast:S.toast,qtyHead:QTY.map(n=>n+' pcs')};
+    const nQ=FD.filter(f=>f.quoted).length;
+    vals.heroLine=`${FD.length} products from ${new Set(FD.flatMap(f=>f.conf)).size} suppliers. ${nQ} with confirmed prices; the rest are catalogue items with quotes pending.`;
+    vals.q=S.q;vals.hasQ=!!S.q;vals.onQ=e=>this.setState({q:e.target.value,view:'shop'});vals.clearQ=()=>this.setState({q:''});
+    vals.quick=['Power bank','Wireless charger','Tote','Laptop','Bottle','Krossover'].map(t=>({label:t,go:()=>this.setState({q:t.toLowerCase(),cat:'All products'})}));
+    const toks=S.q.toLowerCase().trim().split(/\s+/).filter(Boolean);
+    const match=f=>toks.every(t=>f.text.includes(t)||f.text.replace(/\s/g,'').includes(t));
+    const prOk=f=>S.fPr==='All'||(f.from!=null&&({u25:f.from<25,u50:f.from>=25&&f.from<50,u100:f.from>=50&&f.from<100,o100:f.from>=100})[S.fPr]);
+    const stOk=f=>S.fSt==='All'||(S.fSt==='Quoted'?f.quoted:!f.quoted);
+    const supOk=f=>S.fSup==='All'||f.conf.includes(S.fSup)||f.potS.includes(S.fSup);
+    const SR=S.styleF?REFS.find(r=>r.id===S.styleF):null;
+    const base=FD.filter(f=>match(f)&&prOk(f)&&stOk(f)&&supOk(f)&&(!SR||SR.best.includes(f.id)));
+    vals.catTabs=CATS2.map(c=>{const on=S.cat===c,n=c==='All products'?base.length:base.filter(f=>f.cat===c).length;return {label:c,count:n,go:()=>this.setState({cat:c}),bg:on?'#1B1730':'#fff',fg:on?'#fff':'#1B1730',border:on?'#1B1730':'#E7E1F3'};});
+    let list=base.filter(f=>S.cat==='All products'||f.cat===S.cat);
+    if(SR)list.sort((a,b)=>SR.best.indexOf(a.id)-SR.best.indexOf(b.id));
+    Object.assign(vals,{hasStyleF:!!SR,styleName:SR?SR.n:'',styleThumb:SR?IE(RIMG(SR),SR.n,'cover'):null,clearStyle:()=>this.setState({styleF:null}),backGallery:()=>this.go('gallery',{styleF:null})});
+    const ord=f=>CATS2.indexOf(f.cat)*100+(f.quoted?0:50)-f.conf.length;
+    if(!SR)list.sort(S.sort==='Price: low to high'?(a,b)=>(a.from??1e9)-(b.from??1e9):S.sort==='Most suppliers'?(a,b)=>b.conf.length-a.conf.length:S.sort==='A–Z'?(a,b)=>a.n.localeCompare(b.n):(a,b)=>ord(a)-ord(b));
+    vals.resultLine=`${list.length} product${list.length===1?'':'s'}`+(S.q?` for “${S.q}”`:'')+(S.cat!=='All products'?` in ${S.cat}`:'');
+    vals.noResults=!list.length;vals.resetFilters=()=>this.setState({q:'',cat:'All products',fSup:'All',fSt:'All',fPr:'All'});
+    const supNames=[...new Set(FD.flatMap(f=>f.conf))].sort();
+    const sel=(label,key,opts)=>({label,el:SEL(S[key],e=>this.setState({[key]:e.target.value}),opts.map(o=>Array.isArray(o)?{v:o[0],l:o[1]}:{v:o,l:o}))});
+    vals.filters=[sel('Supplier','fSup',[['All','All']].concat(supNames.map(s=>[s,s]))),sel('Price','fSt',[['All','Any status'],['Quoted','Quoted'],['Quote pending','Quote pending']]),sel('Price range','fPr',[['All','Any'],['u25','Under AED 25'],['u50','AED 25–50'],['u100','AED 50–100'],['o100','AED 100+']]),sel('Sort','sort',['Featured','Price: low to high','Most suppliers','A–Z'])];
+    const card=f=>{const dz=this.dzOf(f);return {n:f.n,open:()=>this.go('product',{fid:f.id}),hasImg:!!f.imgV,noImg:!f.imgV,imgEl:f.imgV?IE(f.imgV.img,f.n,f.imgV.fit,1):null,art:!f.imgV&&dz[0]?this.artEl(dz[0].k,dz[0].v):null,
+      st:f.quoted?'Quoted':f.conf.length?'Quote pending':'Sourcing needed',stBg:f.quoted?'#E3F3EA':f.conf.length?'#FAF1F7':'#F4EEE2',stFg:f.quoted?'#1E7A4E':f.conf.length?'#7E3F70':'#6E5520',
+      price:f.from!=null?'From '+money(f.from):f.custom?'Custom quote':'Quote pending',priceFg:f.from!=null?'#1B1730':'#7E3F70',
+      supLine:f.conf.length?f.conf.length+' supplier'+(f.conf.length>1?'s':''):f.potS.length+' potential source'+(f.potS.length>1?'s':''),
+      tags:f.aud.map(a=>AUDT[a]),hasDz:dz.length>0,dzCount:dz.length+' design'+(dz.length>1?'s':'')};};
+    vals.grid=S.view==='shop'?list.map(card):[];
+    vals.pr={};
+    if(S.view==='product'){const f=FD.find(x=>x.id===S.fid)||FD[0];const vid=S.vsel[f.id]||this.defV(f),v=f.V.find(x=>x.vid===vid)||f.V[0];
+      const sup=SUPOF(v?v.s:'');const qty=S.qsel[f.id]||this.defQ(v);const dz=this.dzOf(f);
+      const main=S.main[f.id];let mI=null,mA=null,mL='Supplier photo';
+      if(main&&main.t==='d'){const d=dz[main.i];if(d){mA=this.artEl(d.k,d.v);mL='Design idea';}}
+      if(!mA){const iv=(v&&v.img)?v:f.imgV;if(iv){mI=iv;mL=iv===v?'Supplier photo · '+v.s:'Supplier photo · '+iv.s;}else if(dz[0]){mA=this.artEl(dz[0].k,dz[0].v);mL='Design idea';}}
+      const imgs=[];f.V.forEach(x=>{if(x.img&&!imgs.find(y=>y.img===x.img))imgs.push(x);});
+      const thumbs=imgs.map(x=>({isImg:true,isArt:false,imgEl:IE(x.img,x.s,'cover'),label:x.s,go:()=>this.setState({main:{...S.main,[f.id]:{t:'v'}},vsel:{...S.vsel,[f.id]:x.vid},qsel:{...S.qsel,[f.id]:this.defQ(x)}}),border:!mA&&mI&&mI.img===x.img?'#3E278D':'#EEE8F6'}))
+        .concat(dz.slice(0,6).map((d,i)=>({isImg:false,isArt:true,art:this.artEl(d.k,d.v),label:'Design idea',go:()=>this.setState({main:{...S.main,[f.id]:{t:'d',i}}}),border:main&&main.t==='d'&&main.i===i?'#3E278D':'#EEE8F6'})));
+      const quoted=!!(v&&v.tiers.length),unit=quoted&&v.qt[qty]!=null?v.qt[qty]:null;
+      const qList=quoted?v.tiers:QTY;
+      const link=sup.cat?[sup.cat,'View catalogue']:sup.quote?[sup.quote,'View '+(v.s==='Chops'?'price list':'quote')]:sup.url?[sup.url,'Visit website']:null;
+      const inCart=S.cart.find(c=>c.fid===f.id&&c.vid===(v?v.vid:null));
+      vals.pr={n:f.n,cat:f.cat,goCat:()=>this.go('shop',{cat:f.cat}),tags:f.aud.map(a=>'Suitable for '+AUDT[a].toLowerCase()+(a==='ge'?' audiences':'s')),
+        price:f.from!=null?'From '+money(f.from):'Quote pending',priceFg:f.from!=null?'#1B1730':'#7E3F70',
+        supLine:(f.conf.length?f.conf.length+' supplier'+(f.conf.length>1?'s':''):'No confirmed supplier yet')+(f.potS.length?' · '+f.potS.length+' potential':'')+' · '+f.V.length+' option'+(f.V.length>1?'s':''),
+        mainIsImg:!mA&&!!mI,mainIsArt:!!mA,mainImgEl:mI?IE(mI.img,f.n,mI.fit):null,mainArt:mA,mainLabel:mL,thumbs,
+        vars:f.V.map(x=>{const on=x.vid===(v&&v.vid);return {s:x.s,name:x.name,ref:x.ref,price:this.priceTxt(x),priceSub:x.tiers.length?x.tiers.join(' / ')+' pcs':x.pot?'Not confirmed':'Catalogue item',priceFg:x.lo!=null?'#1B1730':'#7E3F70',
+          pick:()=>this.setState({vsel:{...S.vsel,[f.id]:x.vid},qsel:{...S.qsel,[f.id]:this.defQ(x)},main:{...S.main,[f.id]:{t:'v'}}}),border:on?'#3E278D':'#EEE8F6',dot:on?'#3E278D':'#CFC7E3',dotFill:on?'#3E278D':'transparent'};}),
+        qtys:qList.map(n=>{const on=n===qty;return {label:n+' pcs',go:()=>this.setState({qsel:{...S.qsel,[f.id]:n}}),bg:on?'#3E278D':'#fff',fg:on?'#fff':'#1B1730',border:on?'#3E278D':'#E7E1F3'};}),
+        qtyNote:quoted?'Only quantities this supplier has priced are shown.':'No price yet. Pick a planned quantity for your cart.',
+        quoted:unit!=null,pending:unit==null,unit:unit!=null?money(unit):'',totalLabel:'Estimated total · '+qty+' pcs (excl. VAT)',total:unit!=null?money(unit*qty):'',totalVat:unit!=null?money(unit*qty*1.05):'',
+        pendTitle:v&&v.pot?'Potential source':'Quote pending',pendNote:v&&v.pot?'This supplier is not confirmed for this exact product. Add it to the cart to track it; it will not count towards the confirmed total.':'The supplier catalogue confirms this product. No MoonTech price yet; it can go in the cart as price pending.',
+        brand:v&&v.brand?v.brand.charAt(0).toUpperCase()+v.brand.slice(1)+(v.s==='Chops'?' included in price':' included, as quoted'):'Not confirmed',spec:v?v.spec||'—':'—',moq:sup.moq||'Not confirmed',lead:sup.lead||'Not confirmed',doc:v?v.doc:'',
+        hasLink:!!link,linkUrl:link?link[0]:'',linkLabel:link?link[1]:'',
+        addLabel:inCart?'Update cart · '+qty+' pcs':'Add to cart · '+qty+' pcs',add:()=>this.addToCart(f,v,qty),
+        hasDz:dz.length>0,dz:dz.map(d=>({art:this.artEl(d.k,d.v),aud:AUD[d.v.a].short,audBg:AUD[d.v.a].bg,audFg:AUD[d.v.a].fg,style:STY[d.v.st].n,sw:STY[d.v.st].sw,line:d.v.line})),
+        cmp:f.V.map(x=>{const sp=SUPOF(x.s),on=x.vid===(v&&v.vid);return {s:x.s,name:x.name,ref:x.ref,bg:on?'#F7F4FB':'#fff',pick:()=>this.setState({vsel:{...S.vsel,[f.id]:x.vid},qsel:{...S.qsel,[f.id]:this.defQ(x)}}),
+          cells:QTY.map(n=>x.qt&&x.qt[n]!=null?{t:f2(x.qt[n]),w:700,fg:'#1B1730'}:{t:x.tiers.length?'—':x.pot?'Potential':'Quote pending',w:500,fg:x.tiers.length?'#B9B3CC':'#7E3F70'}),
+          moq:sp.moq?sp.moq.replace('Not confirmed. Lowest quoted tier is ','Lowest tier ').replace('Not confirmed','—'):'—',lead:sp.lead&&sp.lead!=='Not confirmed'?sp.lead:'—'};})};}
+    const gItems=[];FD.forEach(f=>this.dzOf(f).forEach(d=>{if(!gItems.find(g=>g.k===d.k&&g.i===d.i))gItems.push({...d,f});}));
+    vals.gProd=S.gProd;vals.onGProd=e=>this.setState({gProd:e.target.value});
+    vals.gProdEl=SEL(S.gProd,e=>this.setState({gProd:e.target.value}),[{v:'All',l:'All products'}].concat(FD.filter(f=>f.dz.length).map(f=>({v:f.id,l:f.n}))));
+    const chip=(on,label,go,x)=>({label,go,bg:on?'#1B1730':'#fff',fg:on?'#fff':'#1B1730',border:on?'#1B1730':'#E7E1F3',...(x||{})});
+    vals.gStyles=[['all','All styles']].concat(Object.keys(STY).map(k=>[k,STY[k].n])).map(([k,l])=>chip(S.gSty===k,l,()=>this.setState({gSty:k}),{sw:k==='all'?'conic-gradient(#3E278D,#AD5C9A,#C9BCF2,#2B2930,#3E278D)':STY[k].sw}));
+    const refCard=r=>({n:r.n,d:r.d,aud:r.aud,imgEl:IE(RIMG(r),r.n,'cover',1),zoom:()=>this.setState({zoom:r.id}),best:r.best.map(id=>FD.find(f=>f.id===id)).filter(Boolean).map(f=>({n:f.n,go:()=>this.go('product',{fid:f.id})})),view:()=>this.go('shop',{styleF:r.id,cat:'All products',q:'',fSup:'All',fSt:'All',fPr:'All'})});
+    vals.coreRefs=S.view==='gallery'?REFS.filter(r=>r.core).map(refCard):[];vals.moreRefs=S.view==='gallery'?REFS.filter(r=>!r.core).map(refCard):[];
+    const ZR=S.zoom?REFS.find(r=>r.id===S.zoom):null;Object.assign(vals,{hasZoom:!!ZR,zoomName:ZR?ZR.n:'',closeZoom:()=>this.setState({zoom:null}),zoomEl:ZR?React.createElement('img',{src:RIMG(ZR),alt:ZR.n,style:{maxWidth:'100%',maxHeight:'calc(100vh - 120px)',objectFit:'contain',borderRadius:12,display:'block'}}):null});
+    vals.gallery=S.view!=='gallery'?[]:gItems.filter(g=>(S.gProd==='All'||FD.find(f=>f.id===S.gProd).dz.includes(g.k))&&(S.gSty==='all'||g.v.st===S.gSty)).map(g=>({art:this.artEl(g.k,g.v),title:g.v.t||(g.f.n+' · '+VER[g.v.a]),aud:AUD[g.v.a].short,audBg:AUD[g.v.a].bg,audFg:AUD[g.v.a].fg,style:STY[g.v.st].n,sw:STY[g.v.st].sw,line:g.v.line,goLabel:'View '+g.f.n.toLowerCase(),go:()=>this.go('product',{fid:g.f.id,main:{...S.main,[g.f.id]:{t:'d',i:this.dzOf(g.f).findIndex(d=>d.k===g.k&&d.i===g.i)}}})}));
+    vals.suppliers=SUP.map(s=>{const fams=FD.filter(f=>f.conf.includes(s.key)),pots=FD.filter(f=>f.potS.includes(s.key)),nq=fams.filter(f=>f.V.some(v=>v.s===s.key&&v.lo!=null)).length;
+      const bd=[];if(s.st==='Verified prices')bd.push(['Quote received','#E3F3EA','#1E7A4E']);else bd.push([s.st==='File needed'?'File needed':'Quote pending','#FAF1F7','#7E3F70']);if(s.cat)bd.push(['Catalogue available','#F1ECFA','#3E278D']);if(s.url)bd.push(['Website','#F5F2F8','#1B1730']);
+      return {name:s.name,initial:s.name.charAt(0),best:s.best,badges:bd.map(b=>({label:b[0],bg:b[1],fg:b[2]})),
+        inLib:fams.length?fams.length+' product'+(fams.length>1?'s':'')+(nq?`, ${nq} with prices`:''):pots.length?`Potential source for ${pots.length} product${pots.length>1?'s':''}`:'No products yet',
+        pricing:s.pricing,catStatus:s.cat?'Catalogue PDF included':(s.catNote||'Customised catalogue to be provided'),moqLead:'MOQ '+(s.moq||'not confirmed').replace('Not confirmed','not confirmed')+' · Lead time '+(s.lead||'not confirmed').toLowerCase(),
+        hasNote:!!s.note,note:s.note||'',hasProducts:fams.length+pots.length>0,browse:()=>this.go('shop',{fSup:s.key,cat:'All products',q:''}),
+        hasCat:!!s.cat,cat:s.cat||'',hasQuote:!!s.quote,quote:s.quote||'',hasUrl:!!s.url,url:s.url||''};});
+    const rows=this.rows(),T=this.totals(rows);
+    const lines=rows.map(({c,f,v,unit,sub,st,vat,img})=>{const dz=this.dzOf(f);const qopts=(v&&v.tiers.length?v.tiers:QTY).map(n=>({v:n,l:n+' pcs'}));
+      const supOpts=f.V.map(x=>({v:x.vid,l:x.s+' · '+(x.lo!=null?'from '+money(x.lo):x.pot?'potential':'quote pending')}));
+      const setV=e=>{const nv=f.V.find(x=>x.vid===e.target.value);this.saveCart(S.cart.map(x=>x.id===c.id?{...x,vid:nv.vid,qty:nv.tiers.length&&!nv.tiers.includes(x.qty)?this.defQ(nv):x.qty}:x));};
+      return {n:f.n,s:v?v.s:'No supplier',vname:v?v.name:'',ref:v?v.ref:'',st,vat,stBg:unit!=null?'#E3F3EA':'#FAF1F7',stFg:unit!=null?'#1E7A4E':'#7E3F70',
+        supEl:SEL(c.vid,setV,supOpts),qtyEl:SEL(c.qty,e=>this.saveCart(S.cart.map(x=>x.id===c.id?{...x,qty:+e.target.value}:x)),qopts,1),
+        isImg:!!img,isArt:!img,imgEl:img?IE(img,f.n,'cover'):null,art:!img&&dz[0]?this.artEl(dz[0].k,dz[0].v):null,
+        total:sub!=null?money(sub):'Price pending',unit:unit!=null?money(unit)+' / unit':st,fg:unit!=null?'#1B1730':'#7E3F70',
+        open:()=>this.go('product',{fid:f.id,vsel:{...S.vsel,[f.id]:c.vid},qsel:{...S.qsel,[f.id]:c.qty}}),remove:()=>this.saveCart(S.cart.filter(x=>x.id!==c.id))};});
+    Object.assign(vals,{cartLines:lines,cartEmpty:!lines.length,cartHas:lines.length>0,sumItems:lines.length+' item'+(lines.length===1?'':'s')+' in cart',sumSub:money(T.sub),sumVat:money(T.vat),sumTotal:money(T.total),
+      hasPendingItems:lines.length>0,pendingLine:T.pend+' item'+(T.pend===1?'':'s')+' awaiting quote'+(T.pend?', not included in the total.':'.'),pendCount:T.pend,clearCart:()=>this.saveCart([])});
+    const M=S.meta,mode=S.modal;
+    Object.assign(vals,{hasModal:!!mode,closeModal:()=>this.setState({modal:null,mErr:''}),openSheet:()=>this.setState({modal:'sheet',mErr:''}),openPrint:()=>this.setState({modal:'print',mErr:''}),downloadCsv:()=>this.downloadCsv(),
+      mForm:mode==='sheet'||mode==='print',mDone:mode==='done',selId:S.selId,
+      mTitle:mode==='print'?'Print / save PDF':mode==='done'?'Saved':'Save to Google Sheet',mSub:mode==='print'?'These details appear at the top of the summary. Choose “Save as PDF” in the print dialog.':mode==='done'?'':'Sends this selection to the MoonTech merch sheet.',
+      nameReq:mode==='sheet'?'required':'',nameBorder:S.mErr&&!M.name.trim()?'#C0362C':'#E7E1F3',
+      mName:M.name,mPurpose:M.purpose,mBy:M.by,onMName:e=>this.setMeta('name',e.target.value),onMPurpose:e=>this.setMeta('purpose',e.target.value),onMBy:e=>this.setMeta('by',e.target.value),
+      notesEl:React.createElement('textarea',{value:M.notes,onChange:e=>this.setMeta('notes',e.target.value),rows:3,placeholder:'Anything the team should know',style:{fontSize:15,fontWeight:500,padding:'11px 13px',borderRadius:12,border:'1.5px solid #E7E1F3',background:'#fff',outline:'none',color:'#1B1730',fontFamily:'inherit',resize:'vertical'}}),
+      hasMErr:!!S.mErr,mErr:S.mErr,mBtn:mode==='print'?'Print':S.saving?'Saving…':'Save selection',mIcon:mode==='print'?'ph-duotone ph-printer':'ph-duotone ph-table',mBtnOp:S.saving?.6:1,
+      mSubmit:()=>{if(S.saving)return;if(mode==='print')this.printSummary();else this.saveSheet();}});
+    return vals;}
+}
+
+</script>
+</body>
+</html>
